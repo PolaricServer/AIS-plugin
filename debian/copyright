@@ -1,0 +1,30 @@
+
+Files: *
+Copyright: 2013 Øyvind hanssen <ohanssen@acm.org>
+License: GPL-2.0
+(see /usr/share/common-licenses/GPL-2)
+
+
+Files: debian/*
+Copyright: 2013 Øyvind hanssen <ohanssen@acm.org>
+License: GPL-2.0
+(see /usr/share/common-licenses/GPL-2)
+
+
+Files: ais-lib-messages.jar
+Copyright (c) 2011 Danish Maritime Authority
+Licence: Apache Licence version 2.0.
+Source code: https://github.com/dma-ais/AisLib
+(see /usr/share/common-licenses/Apache-2.0)
+
+Files: ais-lib-messages.jar
+Copyright (c) 2011 Danish Maritime Authority
+Licence: Apache Licence version 2.0.
+Source code: https://github.com/dma-ais/AisLib
+(see /usr/share/common-licenses/Apache-2.0)
+
+Files: ais-lib-cli.jar
+Copyright (c) 2011 Danish Maritime Authority
+Licence: Apache Licence version 2.0.
+Source code: https://github.com/dma-ais/AisLib
+(see /usr/share/common-licenses/Apache-2.0)
