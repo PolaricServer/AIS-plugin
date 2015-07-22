@@ -21,6 +21,7 @@ import dk.dma.ais.packet.AisPacket;
 import dk.dma.ais.reader.*;
 import java.util.function.Consumer;
 import dk.dma.ais.message.*;
+import dk.dma.ais.sentence.*;
 import uk.me.jstott.jcoord.*;
 
 
@@ -31,19 +32,23 @@ import uk.me.jstott.jcoord.*;
  
 public class AisChannel extends Channel
 {
-
-    private   AisReader  reader;
     private   String    _host; 
-    private   int       _port; 
-    private   ServerAPI _api;
- 
-
+    private   int       _port;
     
-    
+    transient private   AisReader  reader;
+    transient private   ServerAPI _api;
+    transient private   int       _chno;
+       
+    private static int _next_chno = 0;
+    private Logfile log = AisPlugin.log;
+        
+        
     public AisChannel(ServerAPI api, String id) 
     {
         _init(api, "channel", id);
-        _api = api;
+        _api = api;        
+        _chno = _next_chno;
+        _next_chno++;
         _state = State.OFF;
     }
    
@@ -56,8 +61,6 @@ public class AisChannel extends Channel
         String id = getIdent();
         _host = _api.getProperty("channel."+id+".host", "localhost");
         _port = _api.getIntProperty("channel."+id+".port", 4030);
-  
-   //      _log = new Logfile(_api, id, "ais.log");
     }
    
  
@@ -107,7 +110,7 @@ public class AisChannel extends Channel
        st.setLabelHidden(false);  
        st.setDescr((callsign!=null? "callsign="+callsign+", " : "") + (name!=null? "name="+name+", " : "")+
             "type "+type+"="+type2text(type));   
-       System.out.println("AIS STATIC: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
+       log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
     }
  
  
@@ -188,25 +191,32 @@ public class AisChannel extends Channel
     /** Start the service */
     public void activate(ServerAPI a) {
         getConfig();
+        log.log(" Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
         reader = AisReaders.createReader(_host, _port);
-        reader.registerHandler(new Consumer<AisMessage>() {
-            @Override
-            public void accept(AisMessage msg) {       
-                _state = State.RUNNING;
-                Station st = getStn(msg);
+        reader.registerPacketHandler(new Consumer<AisPacket>() {
+           @Override
+           public void accept(AisPacket packet) {
+               try {
+                   AisMessage msg = packet.getAisMessage();
+                   _state = State.RUNNING;
+                   Station st = getStn(msg);
                 
-                if (msg.getMsgId() == 1 || msg.getMsgId() == 2 || msg.getMsgId() == 3 || msg.getMsgId() == 18)
-                    /* Position */
-                    updatePos(st, (IVesselPositionMessage) msg);
-                else if (msg.getMsgId() == 5 || msg.getMsgId() == 24)
-                    /* Static */
-                    updateStatic(st, (AisStaticCommon) msg);
-                else if (msg.getMsgId() == 19 ) {
-                    /* Extended position */
-                    updateStatic(st, (AisStaticCommon) msg);
-                    updatePos(st, (IVesselPositionMessage)msg);
-                }
-            }
+                   if (msg.getMsgId() == 1 || msg.getMsgId() == 2 || msg.getMsgId() == 3 || msg.getMsgId() == 18)
+                       /* Position */
+                       updatePos(st, (IVesselPositionMessage) msg);
+                   else if (msg.getMsgId() == 5 || msg.getMsgId() == 24)
+                       /* Static */
+                       updateStatic(st, (AisStaticCommon) msg);
+                   else if (msg.getMsgId() == 19 ) {
+                       /* Extended position */
+                       updateStatic(st, (AisStaticCommon) msg);
+                       updatePos(st, (IVesselPositionMessage)msg);
+                   }
+               } catch (Throwable e) {
+                    log.log(" WARNING: cannot parse ais message: "+e);
+                    return;
+               }
+           }
         });
         
         reader.start();
@@ -217,6 +227,7 @@ public class AisChannel extends Channel
     
     /** Stop the service */
     public void deActivate() {
+        log.log(" Dectivating AIS channel: "+getIdent());
         try {
            reader.stopReader();
            reader.join();
@@ -229,7 +240,7 @@ public class AisChannel extends Channel
     
     
     @Override public String getShortDescr()
-       { return "AIS"; }
+       { return "ais"+_chno; }
  
          
 

@@ -8,18 +8,24 @@ import java.util.*;
 public class AisPlugin implements PluginManager.Plugin
 {
       private ServerAPI _api; 
+      static Logfile log;
      
      
       /** Start the plugin  */
       public void activate(ServerAPI api)
-      {
+      {        
+         /* It's ok, there is at most one instance of a plugin */
+         log =  new Logfile(api, "aisplugin", "ais.log");
+        
          try {
            System.out.println("*** AisPlugin.activate");
            _api = api;
            _api.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
-           
+
         }
-        catch (Exception e) {} // FIXME: 
+        catch (Exception e) {
+           log.log(" AisPlugin: ERROR: "+e);
+        } 
       }
       
       
