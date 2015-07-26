@@ -12,7 +12,7 @@
 ## JAR:   Jar archiver
 ##########################################################################
   CLASSDIR = classes
- CLASSPATH = polaric-aprsd.jar:jcoord-polaric.jar:ais-lib-communication.jar:ais-lib-messages.jar:ais-lib-cli.jar
+ CLASSPATH = /usr/share/java/gettext-commons.jar:polaric-aprsd.jar:simple.jar:jcoord-polaric.jar:ais-lib-communication.jar:ais-lib-messages.jar:ais-lib-cli.jar
 INSTALLDIR = /etc/polaric-aprsd/plugins
      JAVAC = javac -source 1.7 -target 1.7
        JAR = jar
@@ -35,7 +35,7 @@ INSTALL_CONFIG = $(DESTDIR)/etc/polaric-aprsd
 ##################################################
     LIBDIR = _lib
  JAVAFLAGS =
- PACKAGES  = core
+ PACKAGES  = core scala
 
 
  
@@ -76,7 +76,10 @@ $(LIBDIR):
 core: 
 	$(JAVAC) -d $(TDIR) $(JAVAFLAGS) src/*.java 
 
-
+	
+.PHONY : scala
+scala: core           
+	scalac -d $(TDIR) -classpath $(LIBDIR):$(CLASSPATH) src/*.scala
 
 clean:
 	@if [ -e ${LIBDIR} ]; then \

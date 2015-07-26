@@ -1,6 +1,7 @@
 
 package no.polaric.ais;
 import no.polaric.aprsd.*;
+import no.polaric.aprsd.http.*;
 import java.util.*;
 
 
@@ -21,7 +22,7 @@ public class AisPlugin implements PluginManager.Plugin
            System.out.println("*** AisPlugin.activate");
            _api = api;
            _api.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
-
+           _api.addHttpHandlerCls("no.polaric.ais.Webserver", null);
         }
         catch (Exception e) {
            log.log(" AisPlugin: ERROR: "+e);

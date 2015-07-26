@@ -38,9 +38,8 @@ public class AisChannel extends Channel
     transient private   AisReader  reader;
     transient private   ServerAPI _api;
     transient private   int       _chno;
-       
     private static int _next_chno = 0;
-    private Logfile log = AisPlugin.log;
+    transient private Logfile log = AisPlugin.log;
         
         
     public AisChannel(ServerAPI api, String id) 
@@ -67,7 +66,7 @@ public class AisChannel extends Channel
     /**
      * Update position.
      */
-    protected void updatePos(Station st, IVesselPositionMessage msg) {
+    protected void updatePos(AisVessel st, IVesselPositionMessage msg) {
 
        if (msg.isPositionValid()) {
           AisPosition pos = msg.getPos();
@@ -87,106 +86,54 @@ public class AisChannel extends Channel
              if (zsec > 55 && sec < 5)
                 ts.roll(Calendar.MINUTE, -1); 
              ts.set(Calendar.SECOND, zsec);
-          }             
-          /* Update APRS "station" */
-          AprsHandler.PosData pd = new AprsHandler.PosData (new LatLng(lat,lon), course, speed, 's', '/');
-          st.update(ts.getTime(), pd, null, "AIS");
+          }                
+          if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, "AIS") );
+          st.updatePosition(ts.getTime(), new LatLng(lat, lon));
+          st.setSpeed(speed);
+          st.setCourse(course);
        }
     }
    
+    
+    protected void updatePosExtra(AisVessel st, AisPositionMessage msg) {
+        updatePos(st, msg);
+        st.setNavStatus(msg.getNavStatus());
+    }
+    
    
    /**
     * Process static AIS message.
     */
-    protected void updateStatic(Station st, AisStaticCommon msg) {      
+    protected void updateStatic(AisVessel st, AisStaticCommon msg) {      
        int type = msg.getShipType();
        String callsign = AisMessage.trimText(msg.getCallsign());
        String name = AisMessage.trimText(msg.getName());
        
-       if (name != null)
-           st.setAlias("'"+name+"'");
-       else if (callsign != null)
-           st.setAlias(callsign);
+       st.setName(name);
+       st.setCallsign(callsign);
        st.setLabelHidden(false);  
-       st.setDescr((callsign!=null? "callsign="+callsign+", " : "") + (name!=null? "name="+name+", " : "")+
-            "type "+type+"="+type2text(type));   
+       st.setType(type);  
        log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
     }
  
  
     /** 
-     * Get item for AIS message (currently an APRS station).
+     * Get Point object for AIS message.
      */
-    protected Station getStn(AisMessage msg) {
-        String id = "MSSI:"+msg.getUserId();
-        Station station = _api.getDB().getStation(id, null);
-        if (station == null) {
-           station = _api.getDB().newStation(id); 
-           station.setLabelHidden(true);
+    protected AisVessel getStn(AisMessage msg) {
+        long id = msg.getUserId();
+        AisVessel v = (AisVessel) _api.getDB().getItem("MSSI:"+id, null);
+        if (v == null) {
+           v = new AisVessel(null, id);
+           _api.getDB().addPoint(v);
+           v.setLabelHidden(true);
         }
-        station.setSource(this);        
-        return station;
+        v.setSource(this);        
+        return v;
     } 
  
  
-    /** 
-     * Get text for ship type.
-     */
-    public String type2text(int type) {
-        if (type / 10 == 2)
-           return "WIG (US)"; 
-        
-        /* 3x = Engaged in */
-        else if (type == 30)
-           return "Fishing";
-        else if (type == 31 || type == 32)
-           return "Towing";
-        else if (type == 33 || type == 34)
-           return "Underwater ops";
-        else if (type == 35)
-           return "Military ops";
-        else if (type == 36)
-           return "Sailing"; 
-        else if (type == 37)
-           return "Recreational";
 
-        /* 5x = Special */
-        else if (type == 50)
-           return "Pilot"; 
-        else if (type == 51)
-           return "Search & rescue";
-        else if (type == 54)
-           return "Commercial response";
-        else if (type == 55)
-           return "Law enforcement";
-        else if (type == 56 || type == 57)
-           return "Assignment.."; 
-        else if (type == 58)
-           return "Medical/public safety";
-        else if (type / 10 == 5)
-           return "Special..";
-           
-        else if (type == 41 || type == 61)
-           return "Passenger < 12 pas";
-        else if (type == 43 || type == 63)
-           return "Ferry < 150 pas";
-        else if (type == 44 || type == 64)
-           return "Ferry >= 150 pas"; 
-        else if (type / 10 == 4)
-           return "HS passenger";
-        else if (type / 10 == 6)
-           return "Passenger";
-        
-        else if (type / 10 == 7)
-           return "Cargo";
-        else if (type / 10 == 8)
-           return "Tanker";
-        else if (type / 10 == 9)
-           return "Other";
-        else return "ERROR";
-    }
- 
- 
  
     /** Start the service */
     public void activate(ServerAPI a) {
@@ -199,14 +146,17 @@ public class AisChannel extends Channel
                try {
                    AisMessage msg = packet.getAisMessage();
                    _state = State.RUNNING;
-                   Station st = getStn(msg);
+                   AisVessel st = getStn(msg);
                 
-                   if (msg.getMsgId() == 1 || msg.getMsgId() == 2 || msg.getMsgId() == 3 || msg.getMsgId() == 18)
+                   if (msg.getMsgId() == 1 || msg.getMsgId() == 2 || msg.getMsgId() == 3)
                        /* Position */
-                       updatePos(st, (IVesselPositionMessage) msg);
+                       updatePosExtra(st, (AisPositionMessage) msg);
                    else if (msg.getMsgId() == 5 || msg.getMsgId() == 24)
                        /* Static */
                        updateStatic(st, (AisStaticCommon) msg);
+                   else if (msg.getMsgId() == 18)
+                       /* Simple position */
+                       updatePos(st, (IVesselPositionMessage) msg);
                    else if (msg.getMsgId() == 19 ) {
                        /* Extended position */
                        updateStatic(st, (AisStaticCommon) msg);
