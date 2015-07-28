@@ -33,25 +33,50 @@ package no.polaric.ais
       ( override val api: ServerAPI, override val model:AisVessel, override val canUpdate: Boolean, override val req: Request) 
             extends TrackerPointView(api, model, canUpdate, req) with ServerUtils
    {
+     
+       val II = getI18n(req, "no.polaric.ais.AisPlugin");
+   
+   
        /** AIS ship info. */
        protected def aisinfo(req : Request): NodeSeq = 
           { if (model.getCallsign() != null)
-              simpleLabel("callsign", "leftlab", I.tr("Callsign")+":", TXT(model.getCallsign())) else <span></span> } ++
+              simpleLabel("callsign", "leftlab", II.tr("Callsign")+":", TXT(model.getCallsign())) else <span></span> } ++
           { if (model.getName() != null)
-              simpleLabel("shipname", "leftlab", I.tr("Name")+":", TXT(model.getName())) else <span></span> } ++
-          simpleLabel("shiptype", "leftlab", I.tr("Type")+":", TXT(model.getTypeText()+" ("+model.getType()+")")) ++
+              simpleLabel("shipname", "leftlab", II.tr("Name")+":", TXT(model.getName())) else <span></span> } ++
+          simpleLabel("shiptype", "leftlab", II.tr("Type")+":", TXT(model.getTypeText()+" ("+model.getType()+")")) ++
           { if (model.getNavStatus() != -1)
-              simpleLabel("navstatus", "leftlab", I.tr("Nav status")+":", 
-              TXT(model.getNavStatusText()+" ("+model.getNavStatus()+")" )) else <span></span> }
+              simpleLabel("navstatus", "leftlab", II.tr("Nav status")+":", 
+              TXT(model.getNavStatusText()+" ("+model.getNavStatus()+")" )) else xml.NodeSeq.Empty }
           ;
        
        
+       /** Show altitude and course */                    
+       protected def speedcourse(req: Request): NodeSeq =
+            { if (model.getSpeed() > 0)
+                  simpleLabel("cspeed", "leftlab", II.tr("Movement")+":", 
+                  { TXT( Math.round(model.getSpeed()*0.539956803*10)/10 + " "+II.tr("knots")+" ") ++  
+                     _directionIcon(model.getCourse(),fprefix(req))}) 
+               else xml.NodeSeq.Empty }
+            ;
+                
+                
+       /** Show info about a trail point. */  
+       override def trailpoint(req: Request, tp: Trail.Item): NodeSeq = 
+            tp_prefix(tp) ++
+            { if (tp.speed >= 0) simpleLabel("tp_speed", "lleftlab", II.tr("Speed")+":", 
+                    TXT(Math.round(tp.speed * 0.539956803*10)/10 + " "+II.tr("knots")) )
+                else EMPTY } ++
+              simpleLabel("tp_dir",   "lleftlab", II.tr("Heading")+":", _directionIcon(tp.course, fprefix(req)))  
+             ;
+             
+            
        override def fields(req : Request): NodeSeq = 
            ident(req) ++
            alias(req) ++
            aisinfo(req) ++
            descr(req) ++
            position(req) ++
+           speedcourse(req) ++ 
            basicSettings(req)
        
    }

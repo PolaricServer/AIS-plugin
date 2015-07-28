@@ -55,6 +55,13 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
          else return getIdent();
       } 
    
+     @Override public String getDescr() {
+        if (hasDescr())
+           return super.getDescr();
+        else
+           return (_callsign != null ? _callsign+", " : "") + getTypeText(); 
+     }
+     
      public int getType() 
         { return _type; }
         

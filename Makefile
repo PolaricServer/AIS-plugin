@@ -35,8 +35,8 @@ INSTALL_CONFIG = $(DESTDIR)/etc/polaric-aprsd
 ##################################################
     LIBDIR = _lib
  JAVAFLAGS =
- PACKAGES  = core scala
-
+ PACKAGES  = core i18n scala
+ LANGUAGES = no
 
  
 
@@ -76,6 +76,11 @@ $(LIBDIR):
 core: 
 	$(JAVAC) -d $(TDIR) $(JAVAFLAGS) src/*.java 
 
+	
+.PHONY : i18n
+i18n: 
+	bash msg-compile.sh $(LANGUAGES)
+	
 	
 .PHONY : scala
 scala: core           
