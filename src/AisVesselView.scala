@@ -32,21 +32,22 @@ package no.polaric.ais
    class AisVesselView 
       ( override val api: ServerAPI, override val model:AisVessel, override val canUpdate: Boolean, override val req: Request) 
             extends TrackerPointView(api, model, canUpdate, req) with ServerUtils
-   {
-     
+   { 
        val II = getI18n(req, "no.polaric.ais.AisPlugin");
    
    
        /** AIS ship info. */
-       protected def aisinfo(req : Request): NodeSeq = 
-          { if (model.getCallsign() != null)
-              simpleLabel("callsign", "leftlab", II.tr("Callsign")+":", TXT(model.getCallsign())) else <span></span> } ++
+       protected def aisinfo(req : Request): NodeSeq =  
+          { if (model.hasCallsign())
+              simpleLabel("callsign", "leftlab", II.tr("Callsign")+":", TXT(model.getCallsign())) else EMPTY } ++
           { if (model.getName() != null)
-              simpleLabel("shipname", "leftlab", II.tr("Name")+":", TXT(model.getName())) else <span></span> } ++
-          simpleLabel("shiptype", "leftlab", II.tr("Type")+":", TXT(model.getTypeText()+" ("+model.getType()+")")) ++
+              simpleLabel("shipname", "leftlab", II.tr("Name")+":", TXT(model.getName())) else EMPTY } ++
+          { if (model.getType() != 0) 
+              simpleLabel("shiptype", "leftlab", II.tr("Type")+":", TXT(model.getTypeText()+" ("+model.getType()+")")) 
+            else EMPTY } ++
           { if (model.getNavStatus() != -1)
               simpleLabel("navstatus", "leftlab", II.tr("Nav status")+":", 
-              TXT(model.getNavStatusText()+" ("+model.getNavStatus()+")" )) else xml.NodeSeq.Empty }
+              TXT(model.getNavStatusText()+" ("+model.getNavStatus()+")" )) else EMPTY }
           ;
        
        
@@ -56,7 +57,7 @@ package no.polaric.ais
                   simpleLabel("cspeed", "leftlab", II.tr("Movement")+":", 
                   { TXT( Math.round(model.getSpeed()*0.539956803*10)/10 + " "+II.tr("knots")+" ") ++  
                      _directionIcon(model.getCourse(),fprefix(req))}) 
-               else xml.NodeSeq.Empty }
+               else EMPTY }
             ;
                 
                 

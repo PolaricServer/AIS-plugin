@@ -109,10 +109,13 @@ public class AisChannel extends Channel
        String callsign = AisMessage.trimText(msg.getCallsign());
        String name = AisMessage.trimText(msg.getName());
        
-       st.setName(name);
-       st.setCallsign(callsign);
-       st.setLabelHidden(false);  
-       st.setType(type);  
+       if (name != null && name.length() > 0)
+          st.setName(name);
+       if (callsign != null && callsign.length() > 0)
+          st.setCallsign(callsign);
+       if (type != 0)
+          st.setType(type);
+       st.setLabelHidden(false); 
        log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
     }
  
@@ -125,8 +128,8 @@ public class AisChannel extends Channel
         AisVessel v = (AisVessel) _api.getDB().getItem("MSSI:"+id, null);
         if (v == null) {
            v = new AisVessel(null, id);
-           _api.getDB().addPoint(v);
            v.setLabelHidden(true);
+           _api.getDB().addPoint(v);
         }
         v.setSource(this);        
         return v;
@@ -164,6 +167,7 @@ public class AisChannel extends Channel
                    }
                } catch (Throwable e) {
                     log.log(" WARNING: cannot parse ais message: "+e);
+                    e.printStackTrace(System.out);
                     return;
                }
            }

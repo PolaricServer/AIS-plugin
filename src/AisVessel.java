@@ -26,7 +26,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      private long      _ident;
      private String    _name;
      private String    _callsign; 
-     private int       _type;
+     private int       _type = 0;
      private int       _navstatus = -1; 
      private Source    _source;
      
@@ -34,12 +34,18 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      public AisVessel(Reference p, long id)
        { super(p); _ident = id; }
        
+     public boolean hasName()
+       { return _name != null && _name.length() > 0; }
+       
      public String getName()
        { return _name; }
      
      public void setName(String n)
        { _name = n; }
      
+     public boolean hasCallsign()
+       { return _callsign != null && _callsign.length() > 0; }
+       
      public String getCallsign()
        { return _callsign; }
        
@@ -50,8 +56,10 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
         { return "MSSI:"+_ident; }
         
      @Override public String _getDisplayId() { 
-         if (_name != null) return _name;
-         else if (_callsign != null) return _callsign; 
+         if (hasName()) 
+            return _name;
+         else if (hasCallsign()) 
+            return _callsign; 
          else return getIdent();
       } 
    
