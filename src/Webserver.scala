@@ -12,6 +12,8 @@ import org.simpleframework.transport.connect.Connection
 import org.simpleframework.transport.connect.SocketConnection
 import org.simpleframework.http._
 import org.xnap.commons.i18n._
+import no.polaric.webconfig._
+
 
 
 package no.polaric.ais
@@ -21,8 +23,8 @@ package no.polaric.ais
       ( val api: ServerAPI ) extends ServerBase(api) with ServerUtils
   {
         PointView.addView(classOf[AisVessel], classOf[AisVesselView])
-        
-        /* TBD */
+        ChannelView.addView(classOf[AisChannel],  classOf[AisChannelView])    
+        ConfigUtils.addChanType("AIS-TCP")
   }
 
 }

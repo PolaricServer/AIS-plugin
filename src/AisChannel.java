@@ -40,7 +40,10 @@ public class AisChannel extends Channel
     transient private   int       _chno;
     private static int _next_chno = 0;
     transient private Logfile log = AisPlugin.log;
-        
+    transient private  long _vessels   = 0;
+    transient private  long _messages  = 0; 
+    
+    
         
     public AisChannel(ServerAPI api, String id) 
     {
@@ -51,6 +54,13 @@ public class AisChannel extends Channel
         _state = State.OFF;
     }
    
+   
+    public long heardVessels()
+       { return _vessels; }
+       
+    public long heardMsgs()
+       { return _messages; }
+       
    
     /**
      * Load/reload configuration parameters. Called each time channel is activated. 
@@ -130,6 +140,7 @@ public class AisChannel extends Channel
            v = new AisVessel(null, id);
            v.setLabelHidden(true);
            _api.getDB().addPoint(v);
+           _vessels++;
         }
         v.setSource(this);        
         return v;
@@ -150,6 +161,7 @@ public class AisChannel extends Channel
                    AisMessage msg = packet.getAisMessage();
                    _state = State.RUNNING;
                    AisVessel st = getStn(msg);
+                   _messages++;
                 
                    if (msg.getMsgId() == 1 || msg.getMsgId() == 2 || msg.getMsgId() == 3)
                        /* Position */
