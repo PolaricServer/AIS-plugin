@@ -123,8 +123,23 @@ public class AisChannel extends Channel
           st.setName(name);
        if (callsign != null && callsign.length() > 0)
           st.setCallsign(callsign);
-       if (type != 0)
+       if (type != 0) {
           st.setType(type);
+          if (type == 51)
+             st.setTag("AIS.SAR");
+          if (type == 55)
+             st.setTag("AIS.law");
+          if (type == 58)
+             st.setTag("AIS.medical");
+          if (type / 10 == 4 || type / 10 == 6)
+             st.setTag("AIS.passenger");
+          if (type / 10 == 5)
+             st.setTag("AIS.special");
+          if (type / 10 == 7)
+             st.setTag("AIS.cargo");
+          if (type / 10 == 8)
+             st.setTag("AIS.tanker");
+       }
        st.setLabelHidden(false); 
        log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
     }
