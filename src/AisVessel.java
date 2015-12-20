@@ -95,7 +95,9 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
        { _source = src; }      
        
      @Override public String getIcon(boolean override) 
-        { return "boat.png"; }
+        { if (override && _icon != null)
+            return _icon; 
+          else return "boat.png"; }
 
     
     /** 

@@ -114,7 +114,7 @@ public class AisChannel extends Channel
    /**
     * Process static AIS message.
     */
-    protected void updateStatic(AisVessel st, AisStaticCommon msg) {      
+    protected void updateStatic(AisVessel st, AisStaticCommon msg) {    
        int type = msg.getShipType();
        String callsign = AisMessage.trimText(msg.getCallsign());
        String name = AisMessage.trimText(msg.getName());
@@ -141,7 +141,8 @@ public class AisChannel extends Channel
              st.setTag("AIS.tanker");
        }
        st.setLabelHidden(false); 
-       log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
+       st.autoTag();
+//       log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
     }
  
  
@@ -154,8 +155,11 @@ public class AisChannel extends Channel
         if (v == null) {
            v = new AisVessel(null, id);
            v.setLabelHidden(true);
+           v.setTag("AIS");
+           v.setTag(getTag());
            _api.getDB().addPoint(v);
            _vessels++;
+           log.log(" Add AIS vessel: uid="+msg.getUserId());
         }
         v.setSource(this);        
         return v;
@@ -165,6 +169,7 @@ public class AisChannel extends Channel
 
  
     /** Start the service */
+    Date prev_t = new Date();
     public void activate(ServerAPI a) {
         getConfig();
         log.log(" Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
@@ -192,6 +197,13 @@ public class AisChannel extends Channel
                        updateStatic(st, (AisStaticCommon) msg);
                        updatePos(st, (IVesselPositionMessage)msg);
                    }
+                   Date t = new Date(); 
+                   if (t.getTime() - prev_t.getTime() >= 120000) {
+                      prev_t = t; 
+                      log.log(" Received "+_messages+" messsages, "+_vessels+" vessels");
+                   }
+                   
+                   
                } catch (Throwable e) {
                     log.log(" WARNING: cannot parse ais message: "+e);
                     e.printStackTrace(System.out);
