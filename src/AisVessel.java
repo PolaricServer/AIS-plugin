@@ -53,7 +53,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
        { _callsign = cs; }
            
      @Override public String getIdent()
-        { return "MSSI:"+_ident; }
+        { return "MMSI:"+_ident; }
         
      @Override public String _getDisplayId() { 
          if (hasName()) 
