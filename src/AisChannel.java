@@ -151,7 +151,7 @@ public class AisChannel extends Channel
      */
     protected AisVessel getStn(AisMessage msg) {
         long id = msg.getUserId();
-        AisVessel v = (AisVessel) _api.getDB().getItem("MSSI:"+id, null);
+        AisVessel v = (AisVessel) _api.getDB().getItem("MMSI:"+id, null);
         if (v == null) {
            v = new AisVessel(null, id);
            v.setLabelHidden(true);
