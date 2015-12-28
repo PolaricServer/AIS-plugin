@@ -49,7 +49,8 @@ package no.polaric.ais
              
          override def fields(req : Request): NodeSeq =   
               state ++
-              aistraffic ++
+              { if (!wasOn) typefield else showtype } ++
+              { if (wasOn) aistraffic else br } ++
               activate ++ 
               inetaddr ++
               br ++
@@ -61,9 +62,10 @@ package no.polaric.ais
          override def action(req : Request): NodeSeq = 
               br ++ br ++
               getField(req, "item1", chp+".on", BOOLEAN) ++
+              { if (_api.getBoolProperty(chp+".on", false)) 
+                   getField(req, "item2", chp+".type", ConfigUtils.CHANTYPE) else EMPTY } ++
               action_inetaddr(chp) ++
-              getField(req, "item10", chp+".restrict", BOOLEAN) ++
-              getField(req, "item11", chp+".style", NAME) ++ 
+              action_visibility ++
               action_activate
               ; 
              
