@@ -62,7 +62,7 @@ package no.polaric.ais
          override def action(req : Request): NodeSeq = 
               br ++ br ++
               getField(req, "item1", chp+".on", BOOLEAN) ++
-              { if (_api.getBoolProperty(chp+".on", false)) 
+              { if (!_api.getBoolProperty(chp+".on", false)) 
                    getField(req, "item2", chp+".type", ConfigUtils.CHANTYPE) else EMPTY } ++
               action_inetaddr(chp) ++
               action_visibility ++
