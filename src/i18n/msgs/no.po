@@ -12,11 +12,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: src/AisVesselView.scala:43
+#: src/AisChannelView.scala:43
+msgid "AIS messages"
+msgstr "AIS meldinger"
+
+#: src/AisChannelView.scala:44
+msgid "Added vessels"
+msgstr "Fartøy lagt til"
+
+#: src/AisVesselView.scala:42
 msgid "Callsign"
 msgstr "Kallesignal"
 
-#: src/AisVesselView.scala:45
+#: src/AisVesselView.scala:44
 msgid "Name"
 msgstr "Navn"
 
@@ -24,22 +32,22 @@ msgstr "Navn"
 msgid "Type"
 msgstr "Type"
 
-#: src/AisVesselView.scala:48
+#: src/AisVesselView.scala:49
 msgid "Nav status"
 msgstr "Nav status"
 
-#: src/AisVesselView.scala:56
+#: src/AisVesselView.scala:57
 msgid "Movement"
 msgstr "Bevegelse"
 
-#: src/AisVesselView.scala:57 src/AisVesselView.scala:67
+#: src/AisVesselView.scala:58 src/AisVesselView.scala:68
 msgid "knots"
 msgstr "knop"
 
-#: src/AisVesselView.scala:66
+#: src/AisVesselView.scala:67
 msgid "Speed"
 msgstr "Fart"
 
-#: src/AisVesselView.scala:69
+#: src/AisVesselView.scala:70
 msgid "Heading"
 msgstr "Retning"
