@@ -19,13 +19,13 @@ public class AisPlugin implements PluginManager.Plugin
          log =  new Logfile(api, "aisplugin", "ais.log");
         
          try {
-           System.out.println("*** AisPlugin.activate");
+           api.log().info("AisPlugin", "Activate plugin...");
            _api = api;
            _api.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
            _api.addHttpHandlerCls("no.polaric.ais.Webserver", null);
         }
         catch (Exception e) {
-           log.log(" AisPlugin: ERROR: "+e);
+           _api.log().error("AisPlugin", ""+e);
         } 
       }
       
@@ -39,7 +39,7 @@ public class AisPlugin implements PluginManager.Plugin
        
       /**  Stop the plugin */ 
       public void deActivate() {
-         System.out.println("*** AisPlugin.deactivate");
+         _api.log().info("AisPlugin", "Deactivate plugin");
       }
        
        

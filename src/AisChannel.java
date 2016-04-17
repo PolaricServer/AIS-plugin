@@ -141,8 +141,7 @@ public class AisChannel extends Channel
              st.setTag("AIS.tanker");
        }
        st.setLabelHidden(false); 
-       st.autoTag();
-//       log.log(" STATIC MSG: uid="+msg.getUserId() + ", type="+type+", callsign="+callsign+", name=" + name);  
+       st.autoTag(); 
     }
  
  
@@ -159,7 +158,7 @@ public class AisChannel extends Channel
            v.setTag(getTag());
            _api.getDB().addPoint(v);
            _vessels++;
-           log.log(" Add AIS vessel: uid="+msg.getUserId());
+           log.info(null, chId()+"Add AIS vessel: uid="+msg.getUserId());
         }
         v.setSource(this);        
         return v;
@@ -172,7 +171,7 @@ public class AisChannel extends Channel
     Date prev_t = new Date();
     public void activate(ServerAPI a) {
         getConfig();
-        log.log(" Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
+        _api.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
         reader = AisReaders.createReader(_host, _port);
         reader.registerPacketHandler(new Consumer<AisPacket>() {
            @Override
@@ -200,12 +199,12 @@ public class AisChannel extends Channel
                    Date t = new Date(); 
                    if (t.getTime() - prev_t.getTime() >= 120000) {
                       prev_t = t; 
-                      log.log(" Received "+_messages+" messsages, "+_vessels+" vessels");
+                      log.info(null, chId()+"Received "+_messages+" messsages, "+_vessels+" vessels");
                    }
                    
                    
                } catch (Throwable e) {
-                    log.log(" WARNING: cannot parse ais message: "+e);
+                    log.warn(null, chId()+"Cannot parse ais message: "+e);
                     e.printStackTrace(System.out);
                     return;
                }
@@ -220,7 +219,7 @@ public class AisChannel extends Channel
     
     /** Stop the service */
     public void deActivate() {
-        log.log(" Dectivating AIS channel: "+getIdent());
+        _api.log().info("AisChannel", chId()+"Dectivating AIS channel: "+getIdent());
         try {
            reader.stopReader();
            reader.join();
