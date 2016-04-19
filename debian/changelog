@@ -1,3 +1,9 @@
+polaric-ais-plugin (2.0.0) stable; urgency=medium
+
+  * Keep up with v.2.0
+
+ -- Øyvind Hanssen <ohanssen@acm.org>  Tue, 19 Apr 2016 21:59:44 +0200
+
 polaric-ais-plugin (1.9.0) unstable; urgency=medium
 
   * Some adjustments and small additions 
