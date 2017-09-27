@@ -7,10 +7,6 @@ import no.polaric.aprsd._
 import no.polaric.aprsd.http._
 import no.polaric.aprsd.http.ServerUtils
 import no.polaric.aprsd.http.ServerBase
-import org.simpleframework.http.core.Container
-import org.simpleframework.transport.connect.Connection
-import org.simpleframework.transport.connect.SocketConnection
-import org.simpleframework.http._
 import org.xnap.commons.i18n._
 import no.polaric.webconfig._
 

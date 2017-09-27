@@ -16,14 +16,13 @@
 import java.util._
 import java.io._
 import scala.xml._
-import org.simpleframework.transport.connect.Connection
-import org.simpleframework.transport.connect.SocketConnection
-import org.simpleframework.http._
 import uk.me.jstott.jcoord._
 import no.polaric.aprsd._
 import no.polaric.aprsd.http._
 import org.xnap.commons.i18n._
 import no.polaric.webconfig._
+import spark.Request;
+import spark.Response;
 
 
 
