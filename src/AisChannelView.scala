@@ -20,7 +20,6 @@ import uk.me.jstott.jcoord._
 import no.polaric.aprsd._
 import no.polaric.aprsd.http._
 import org.xnap.commons.i18n._
-import no.polaric.webconfig._
 import spark.Request;
 import spark.Response;
 

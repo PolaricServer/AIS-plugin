@@ -40,7 +40,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      public String getName()
        { return _name; }
      
-     public void setName(String n)
+     public void setName(String n) 
        { _name = n; }
      
      public boolean hasCallsign()

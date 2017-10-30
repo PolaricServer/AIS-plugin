@@ -8,7 +8,6 @@ import no.polaric.aprsd.http._
 import no.polaric.aprsd.http.ServerUtils
 import no.polaric.aprsd.http.ServerBase
 import org.xnap.commons.i18n._
-import no.polaric.webconfig._
 
 
 

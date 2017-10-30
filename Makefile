@@ -12,7 +12,9 @@
 ## JAR:   Jar archiver
 ##########################################################################
   CLASSDIR = classes
- CLASSPATH = /usr/share/java/gettext-commons.jar:polaric-aprsd.jar:polaric-webconfig.jar:spark-core.jar:jcoord-polaric.jar:ais-lib-communication.jar:ais-lib-messages.jar:ais-lib-cli.jar
+     SYSLIB= /usr/share/java
+      ALIB = aprsd-lib
+ CLASSPATH = $(SYSLIB)/gettext-commons.jar:$(ALIB)/spark-core-polaric.jar:$(ALIB)/jcoord-polaric.jar:lib/ais-lib-communication.jar:lib/ais-lib-messages.jar:lib/ais-lib-cli.jar:polaric-aprsd.jar
 INSTALLDIR = /etc/polaric-aprsd/plugins
      JAVAC = javac -source 1.8 -target 1.8
        JAR = jar
@@ -46,10 +48,7 @@ install: polaric-ais.jar
 	install -d $(INSTALL_JAR)
 	install -d $(INSTALL_CONFIG)/config.d
 	install -m 644 polaric-ais.jar $(INSTALL_JAR)
-	install -m 644 ais-lib-communication.jar $(INSTALL_JAR)
-	install -m 644 ais-lib-messages.jar $(INSTALL_JAR)
-	install -m 644 ais-lib-utils.jar $(INSTALL_JAR)
-	install -m 644 ais-lib-cli.jar $(INSTALL_JAR)
+	install -m 644 lib/*.jar $(INSTALL_JAR)
 	install -m 644 ais.ini $(INSTALL_CONFIG)/config.d
 	
 $(INSTALLDIR)/polaric-ais.jar: polaric-ais.jar
