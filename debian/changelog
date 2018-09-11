@@ -1,3 +1,9 @@
+polaric-ais-plugin (2.1.0) stable; urgency=medium
+
+  * Keep up with Polaric v2.1. Use AisLib 2.2. 
+
+ -- Øyvind Hanssen <ohanssen@acm.org>  Tue, 11 Sep 2018 20:58:56 +0200
+
 polaric-ais-plugin (2.0.0) stable; urgency=medium
 
   * Keep up with v.2.0
