@@ -16,7 +16,7 @@
       ALIB = aprsd-lib
  CLASSPATH = $(SYSLIB)/gettext-commons.jar:$(ALIB)/spark-core-polaric.jar:$(ALIB)/jcoord-polaric.jar:lib/ais-lib-communication.jar:lib/ais-lib-messages.jar:lib/ais-lib-cli.jar:polaric-aprsd.jar
 INSTALLDIR = /etc/polaric-aprsd/plugins
-     JAVAC = javac -source 1.8 -target 1.8
+     JAVAC = javac -source 1.10 -target 1.10
        JAR = jar
        
        
