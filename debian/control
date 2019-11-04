@@ -2,21 +2,21 @@ Source: polaric-ais-plugin
 Section: hamradio
 Priority: optional
 Maintainer: Øyvind Hanssen <ohanssen@acm.org>
-Build-Depends: debhelper (>= 8.0.0), openjdk-10-jdk|openjdk-11-jdk, scala (>> 2.11.12)
-Standards-Version: 3.9.6
+Build-Depends: debhelper (>=10), openjdk-11-jdk|openjdk-12-jdk|openjdk-13-jdk, scala (>>2.11.12)
+Standards-Version: 3.9.8
 Homepage: http://aprs.no/dokuwiki
 
 Package: polaric-ais-plugin
 Architecture: all
-Depends: polaric-aprsd (>= 2.1+2), ${misc:Depends}
+Depends: polaric-aprsd (>=2.1.2+), ${misc:Depends}
 Recommends: 
 Description: Polaric Server: AIS data plugin. 
- The "Polaric Server" which is mainly a web based service to present APRS 
+ The "Polaric Server" is mainly a web based service to present APRS 
  tracking information on maps and where the information is updated at real-
  time. It is originally targeted for use by radio amateurs in voluntary search
  and rescue service in Norway. It consists of a web application and a server 
  program (APRS daemon). 
  .
- This is a plugin that can read AIS data from a TCP stream and and present 
+ This is a plugin that can read AIS data from a TCP stream and present 
  AIS vessels as moving points on the map. It is used on aprs.no with data from 
  the Norwegian Maritime Authority.
