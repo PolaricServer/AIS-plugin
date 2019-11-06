@@ -158,7 +158,6 @@ public class AisChannel extends Channel
            v.setTag(getTag());
            _api.getDB().addPoint(v);
            _vessels++;
-           log.info(null, chId()+"Add AIS vessel: uid="+msg.getUserId());
         }
         v.setSource(this);        
         return v;
