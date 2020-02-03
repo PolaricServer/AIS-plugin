@@ -152,12 +152,13 @@ public class AisChannel extends Channel
         long id = msg.getUserId();
         AisVessel v = (AisVessel) _api.getDB().getItem("MMSI:"+id, null);
         if (v == null) {
-           v = new AisVessel(null, id);
-           v.setLabelHidden(true);
-           v.setTag("AIS");
-           v.setTag(getTag());
-           _api.getDB().addPoint(v);
-           _vessels++;
+            v = new AisVessel(null, id);
+            v.setLabelHidden(true);
+            v.setTag("AIS");
+            if (getTag() != null && !getTag().equals(""))
+                v.setTag(getTag());
+            _api.getDB().addPoint(v);
+            _vessels++;
         }
         v.setSource(this);        
         return v;
