@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2015 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2015-20 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,14 +91,12 @@ public class AisChannel extends Channel
           ts.setTimeInMillis((new Date()).getTime()) ;
           int zsec = msg.getUtcSec();
           if (zsec < 60) {
-             int sec = ts.get(Calendar.SECOND);
-          
-             if (zsec > 55 && sec < 5)
-                ts.roll(Calendar.MINUTE, -1); 
              ts.set(Calendar.SECOND, zsec);
+             while (ts.getTimeInMillis() > (new Date()).getTime()+2000)
+                ts.roll(Calendar.MINUTE, -1); 
           }                
-          if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, "AIS") );
-          st.updatePosition(ts.getTime(), new LatLng(lat, lon));
+          if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, "AIS") )
+            st.updatePosition(ts.getTime(), new LatLng(lat, lon));
           st.setSpeed(speed);
           st.setCourse(course);
        }
