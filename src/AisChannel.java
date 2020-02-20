@@ -92,7 +92,7 @@ public class AisChannel extends Channel
           int zsec = msg.getUtcSec();
           if (zsec < 60) {
              ts.set(Calendar.SECOND, zsec);
-             while (ts.getTimeInMillis() > (new Date()).getTime()+2000)
+             while (ts.getTimeInMillis() > (new Date()).getTime()+3000)
                 ts.roll(Calendar.MINUTE, -1); 
           }                
           if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, "AIS") )
