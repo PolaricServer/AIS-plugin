@@ -73,36 +73,45 @@ public class AisChannel extends Channel
     }
    
  
+ 
     /**
      * Update position.
      */
-    protected void updatePos(AisVessel st, IVesselPositionMessage msg) {
+    protected void updatePos(AisVessel st, IPositionMessage msg) {
 
-       if (msg.isPositionValid()) {
-          AisPosition pos = msg.getPos();
-          double lat = pos.getLatitudeDouble();
-          double lon = pos.getLongitudeDouble();
-         
-          int speed = (msg.isSogValid() ? (int) Math.round(msg.getSog() * 0.1852) : -1);
-          int course = (msg.isHeadingValid() ? msg.getTrueHeading() : -1);
-  
-          /* Adjust timestamp */
-          Calendar ts = Calendar.getInstance();
-          ts.setTimeInMillis((new Date()).getTime()) ;
-          int zsec = msg.getUtcSec();
-          if (zsec < 60) {
-             ts.set(Calendar.SECOND, zsec);
-             while (ts.getTimeInMillis() > (new Date()).getTime()+3000)
-                ts.roll(Calendar.MINUTE, -1); 
-          }                
-          if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, "AIS") )
+        AisPosition pos = msg.getPos();
+        double lat = pos.getLatitudeDouble();
+        double lon = pos.getLongitudeDouble();
+        int speed=-1, course=-1;
+        Calendar ts = Calendar.getInstance();
+            ts.setTimeInMillis((new Date()).getTime()) ;
+            
+        if (msg instanceof IVesselPositionMessage) {
+            var mm = (IVesselPositionMessage) msg;
+            if (!mm.isPositionValid())
+                return;
+                
+            speed = (mm.isSogValid() ? (int) Math.round(mm.getSog() * 0.1852) : -1);
+            course = (mm.isHeadingValid() ? mm.getTrueHeading() : -1);
+                
+            /* Adjust timestamp */
+            int zsec = mm.getUtcSec();
+            if (zsec < 60) {
+                ts.set(Calendar.SECOND, zsec);
+                while (ts.getTimeInMillis() > (new Date()).getTime()+3000)
+                    ts.roll(Calendar.MINUTE, -1); 
+            }
+        }
+        
+        if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, 
+                (msg instanceof AisMessage27 ? "AISLONG" : "AIS")))
             st.updatePosition(ts.getTime(), new LatLng(lat, lon));
-          st.setSpeed(speed);
-          st.setCourse(course);
-       }
+        st.setSpeed(speed);
+        st.setCourse(course);
     }
    
-    
+
+   
     protected void updatePosExtra(AisVessel st, AisPositionMessage msg) {
         updatePos(st, msg);
         st.setNavStatus(msg.getNavStatus());
@@ -194,6 +203,14 @@ public class AisChannel extends Channel
                        updateStatic(st, (AisStaticCommon) msg);
                        updatePos(st, (IVesselPositionMessage)msg);
                    }
+                   else if (msg.getMsgId() == 27 ) {
+                       /* Long range */
+                       log.info("AisChannel", chId()+"Long range message: "+st.getName()+": "+msg);
+                       updatePos(st, (IPositionMessage) msg);
+                   }
+                   
+                   
+                   
                    Date t = new Date(); 
                    if (t.getTime() - prev_t.getTime() >= 120000) {
                       prev_t = t; 
