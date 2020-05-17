@@ -27,7 +27,7 @@ import uk.me.jstott.jcoord.*;
 
 
 /**
- * Sound modem radio channel
+ * AIS Channel. Use AisTcpReader to get messages over a TCP connection.
  */
  
 public class AisChannel extends Channel
@@ -35,7 +35,7 @@ public class AisChannel extends Channel
     private   String    _host; 
     private   int       _port;
     
-    transient private   AisReader  reader;
+    transient private   AisTcpReader  reader;
     transient private   ServerAPI _api;
     transient private   int       _chno;
     private static int _next_chno = 0;
@@ -180,6 +180,7 @@ public class AisChannel extends Channel
         getConfig();
         _api.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
         reader = AisReaders.createReader(_host, _port);
+        reader.setReconnectInterval(10000);
         reader.registerPacketHandler(new Consumer<AisPacket>() {
            @Override
            public void accept(AisPacket packet) {
@@ -205,7 +206,6 @@ public class AisChannel extends Channel
                    }
                    else if (msg.getMsgId() == 27 ) {
                        /* Long range */
-                       log.info("AisChannel", chId()+"Long range message: "+st.getName()+": "+msg);
                        updatePos(st, (IPositionMessage) msg);
                    }
                    
