@@ -15,15 +15,15 @@ http://aprs.no/polaricserver
 
 ## System requirements
 
-Linux/Java platform (tested with Debian/Ubuntu/Mint) with
-* Java Runtime environment version 8 or later. 
+Linux/Java platform (tested with Debian/Ubuntu) with
+* Java Runtime environment version 11 or later. 
 * scala-library version 2.11 or later. You will also need scala-xml
   and scala-parser-combinators packages. 
 * polaric-aprsd, polaric-webapp and polaric-webconfig-plugin installed.
 
 ## Installation
 
-We provide a Debian package (debian Jessie or later) For information on getting 
+We provide a deb package (Debian Buster or later) For information on getting 
 started on a Debian platform (or derivative) please see: 
 http://aprs.no/dokuwiki?id=install.dev
 
@@ -39,7 +39,7 @@ Build from the source is done by a plain old makefile. Yes I know :)
 Maybe I move to something else a little later. Setup for generating Debian
 packages is included. You may use the 'debuild' command.
 
-You will need JDK (Oracle or OpenJDK) version 8 or later, the Scala
+You will need JDK (Oracle or OpenJDK) version 11 or later, the Scala
 programming language version 2.11 or later (scala and scala-library). 
 
 Note. To compile this package you need to symlink or copy the following
