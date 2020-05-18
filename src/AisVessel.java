@@ -104,6 +104,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      * Get text for ship type.
      */
     public static String type2text(int type) {
+
         if (type / 10 == 2)
            return "WIG (US)"; 
         
@@ -161,7 +162,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
       switch (st) {
          case 0: return "Under way using engine"; 
          case 1: return "At anchor";
-         case 2: return "Not under commnad";
+         case 2: return "Not under command";
          case 3: return "Restricted manoeuvrability";
          case 4: return "Constrained by her draught";
          case 5: return "Moore";
