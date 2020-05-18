@@ -1,3 +1,10 @@
+polaric-ais-plugin (2.5) stable; urgency=medium
+
+  * Update libraries. 
+  * Reconnect interval adjustment 
+
+ -- Øyvind Hanssen <ohanssen@acm.org>  Mon, 18 May 2020 22:32:46 +0200
+
 polaric-ais-plugin (2.3) stable; urgency=medium
 
   * Timestamping fix 
