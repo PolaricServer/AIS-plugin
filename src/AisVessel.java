@@ -23,6 +23,31 @@ import no.polaric.aprsd.*;
  
 public class AisVessel extends TrackerPoint implements Serializable, Cloneable
 {
+
+           
+    /* Class for Json encoding info about a point. This is subclassed in AprsPoint */
+    public static class JsInfo extends TrackerPoint.JsInfo {
+        public String name, callsign; 
+        public String vtype, navstatus;
+        
+        public JsInfo(AisVessel p) {
+            super(p);
+            type = "AisVessel";
+            name = p.getName();
+            callsign = p.getCallsign();
+            vtype = p.getTypeText();
+            navstatus = p.getNavStatusText();
+        }
+    }
+    
+    
+    public JsInfo getJsInfo() {
+        return new JsInfo(this);
+    }
+
+
+
+
      private long      _ident;
      private String    _name;
      private String    _callsign; 

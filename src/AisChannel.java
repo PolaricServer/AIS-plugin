@@ -83,6 +83,7 @@ public class AisChannel extends Channel
         double lat = pos.getLatitudeDouble();
         double lon = pos.getLongitudeDouble();
         int speed=-1, course=-1;
+         
         Calendar ts = Calendar.getInstance();
             ts.setTimeInMillis((new Date()).getTime()) ;
             
@@ -103,6 +104,10 @@ public class AisChannel extends Channel
             }
         }
         
+        if (lat>90 || lat<-90) {
+            log.debug(null, chId()+"Latitude out of bounds ("+st.getIdent()+") "+lat);
+            return;
+        }
         if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, 
                 (msg instanceof AisMessage27 ? "AISLONG" : "AIS")))
             st.updatePosition(ts.getTime(), new LatLng(lat, lon));

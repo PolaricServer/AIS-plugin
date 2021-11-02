@@ -1,3 +1,9 @@
+polaric-ais-plugin (2.5+) UNRELEASED; urgency=medium
+
+  * Support Json data from points
+
+ -- Oyvind Hanssen <ohanssen@acm.org>  Fri, 29 Oct 2021 11:03:58 +0200
+
 polaric-ais-plugin (2.5) stable; urgency=medium
 
   * Update libraries. 
