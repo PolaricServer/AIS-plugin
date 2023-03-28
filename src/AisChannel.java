@@ -108,9 +108,13 @@ public class AisChannel extends Channel
             log.debug(null, chId()+"Latitude out of bounds ("+st.getIdent()+") "+lat);
             return;
         }
+        LatLng prevpos = (st.getPosition()==null ? null : st.getPosition().toLatLng());
         if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, 
-                (msg instanceof AisMessage27 ? "AISLONG" : "AIS")))
-            st.updatePosition(ts.getTime(), new LatLng(lat, lon));
+                (msg instanceof AisMessage27 ? "AISLONG" : "AIS"))) 
+        {
+            st.updatePosition(ts.getTime(), new LatLng(lat, lon));    
+            _api.getDB().updateItem(st, prevpos);
+        }
         st.setSpeed(speed);
         st.setCourse(course);
     }
@@ -169,7 +173,7 @@ public class AisChannel extends Channel
             v.setTag("AIS");
             if (getTag() != null && !getTag().equals(""))
                 v.setTag(getTag());
-            _api.getDB().addPoint(v);
+            _api.getDB().addItem(v);
             _vessels++;
         }
         v.setSource(this);        

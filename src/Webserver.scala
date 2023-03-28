@@ -17,7 +17,7 @@ package no.polaric.ais
   class Webserver 
       ( val api: ServerAPI ) extends ServerBase(api) with ServerUtils
   {
-        PointView.addView(classOf[AisVessel], classOf[AisVesselView])
+        api.log().debug("ais.WebServer", "Register channel view");
         ChannelView.addView(classOf[AisChannel],  classOf[AisChannelView])    
         ConfigUtils.addChanType("AIS-TCP")
   }

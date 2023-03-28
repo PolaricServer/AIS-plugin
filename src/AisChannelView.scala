@@ -38,8 +38,8 @@ package no.polaric.ais
          
          protected def aistraffic: NodeSeq = 
              simpleLabel("nmsgs", "leftlab", 
-                I.tr("AIS messages")+":", TXT(""+model.heardMsgs())) ++   
-             simpleLabel("nvessels", "leftlab", I.tr("Added vessels")+":", TXT(""+model.heardVessels())) ++ br     
+                "AIS messages:", TXT(""+model.heardMsgs())) ++   
+             simpleLabel("nvessels", "leftlab", "Added vessels:", TXT(""+model.heardVessels())) ++ br     
              ;
          
 
