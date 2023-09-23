@@ -14,9 +14,9 @@
   CLASSDIR = classes
      SYSLIB= /usr/share/java
       ALIB = aprsd-lib
- CLASSPATH = $(SYSLIB)/gettext-commons.jar:$(ALIB)/spark-core-polaric.jar:$(ALIB)/jcoord-polaric.jar:lib/ais-lib-communication.jar:lib/ais-lib-messages.jar:lib/ais-lib-cli.jar:polaric-aprsd.jar
+ CLASSPATH = $(ALIB)/jcoord-polaric.jar:lib/ais-lib-communication.jar:lib/ais-lib-messages.jar:lib/ais-lib-cli.jar:polaric-aprsd.jar
 INSTALLDIR = /etc/polaric-aprsd/plugins
-     JAVAC = javac -source 11 -target 11
+     JAVAC = javac -source 17 -target 17
        JAR = jar
        
        
@@ -37,7 +37,7 @@ INSTALL_CONFIG = $(DESTDIR)/etc/polaric-aprsd
 ##################################################
     LIBDIR = _lib
  JAVAFLAGS =
- PACKAGES  = core i18n scala
+ PACKAGES  = core
  LANGUAGES = no
 
  
@@ -75,15 +75,6 @@ $(LIBDIR):
 core: 
 	$(JAVAC) -d $(TDIR) $(JAVAFLAGS) src/*.java 
 
-	
-.PHONY : i18n
-i18n: 
-	bash msg-compile.sh $(LANGUAGES)
-	
-	
-.PHONY : scala
-scala: core           
-	scalac -d $(TDIR) -classpath $(LIBDIR):$(CLASSPATH) src/*.scala
 
 clean:
 	@if [ -e ${LIBDIR} ]; then \

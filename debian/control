@@ -2,13 +2,13 @@ Source: polaric-ais-plugin
 Section: hamradio
 Priority: optional
 Maintainer: Øyvind Hanssen <ohanssen@acm.org>
-Build-Depends: debhelper (>=10), openjdk-11-jdk|openjdk-12-jdk|openjdk-13-jdk, scala (>>2.11.12)
+Build-Depends: debhelper (>=10), openjdk-17-jdk-headless|openjdk-18-jdk-headless|openjdk-19-jdk-headless|openjdk-20-jdk-headless
 Standards-Version: 3.9.8
 Homepage: http://aprs.no/dokuwiki
 
 Package: polaric-ais-plugin
 Architecture: all
-Depends: polaric-aprsd (>=2.1.2+), ${misc:Depends}
+Depends: polaric-aprsd (>=2.12+), ${misc:Depends}
 Recommends: 
 Description: Polaric Server: AIS data plugin. 
  The "Polaric Server" is mainly a web based service to present APRS 

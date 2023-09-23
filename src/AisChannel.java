@@ -16,14 +16,15 @@ package no.polaric.ais;
 import java.io.*;
 import java.util.*;
 import no.polaric.aprsd.*;
-
+import no.polaric.aprsd.http.*;
 import dk.dma.ais.packet.AisPacket;
 import dk.dma.ais.reader.*;
 import java.util.function.Consumer;
 import dk.dma.ais.message.*;
 import dk.dma.ais.sentence.*;
 import uk.me.jstott.jcoord.*;
-
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonSubTypes.*;
 
 
 /**
@@ -43,7 +44,13 @@ public class AisChannel extends Channel
     transient private  long _vessels   = 0;
     transient private  long _messages  = 0; 
     
-    
+        
+    /* Register subtypes for deserialization */
+    static { 
+        ServerBase.addSubtype(AisChannel.JsConfig.class, "AIS-TCP");
+    }
+        
+        
         
     public AisChannel(ServerAPI api, String id) 
     {
@@ -54,7 +61,40 @@ public class AisChannel extends Channel
         _state = State.OFF;
     }
    
-   
+       
+    /* 
+     * Information about config to be exchanged in REST API
+     */
+    
+    @JsonTypeName("AIS-TCP")
+    public static class JsConfig extends Channel.JsConfig {
+        public long messages, vessels;
+        public int port; 
+        public String host;
+    }
+       
+       
+    public JsConfig getJsConfig() {
+        var cnf = new JsConfig();
+        cnf.messages = _messages;
+        cnf.vessels = _vessels; 
+        cnf.type  = "AIS-TCP";
+        cnf.host  = _api.getProperty("channel."+getIdent()+".host", "localhost");
+        cnf.port  = _api.getIntProperty("channel."+getIdent()+".port", 21);
+        return cnf;
+    }
+    
+    
+    public void setJsConfig(Channel.JsConfig ccnf) {
+        var cnf = (JsConfig) ccnf;
+        var props = _api.getConfig();
+        props.setProperty("channel."+getIdent()+".host", cnf.host);
+        props.setProperty("channel."+getIdent()+".port", ""+cnf.port);
+    }
+    
+       
+       
+       
     public long heardVessels()
        { return _vessels; }
        
