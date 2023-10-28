@@ -46,11 +46,10 @@ public class AisChannel extends Channel
     
         
     /* Register subtypes for deserialization */
-    static { 
+    public static void classInit() { 
         ServerBase.addSubtype(AisChannel.JsConfig.class, "AIS-TCP");
     }
-        
-        
+
         
     public AisChannel(ServerAPI api, String id) 
     {
@@ -285,9 +284,11 @@ public class AisChannel extends Channel
     public void deActivate() {
         _api.log().info("AisChannel", chId()+"Dectivating AIS channel: "+getIdent());
         try {
-           reader.stopReader();
-           reader.join();
-           reader = null;
+            if (reader!=null) {
+                reader.stopReader();
+                reader.join();
+                reader = null;
+            }
            _state = State.OFF;
         } 
         catch (InterruptedException e) {}

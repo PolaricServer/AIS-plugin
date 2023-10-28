@@ -22,6 +22,7 @@ public class AisPlugin implements PluginManager.Plugin
            api.log().info("AisPlugin", "Activate plugin...");
            _api = api;
            _api.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
+           AisChannel.classInit();
            AuthInfo.addService("ais");
         }
         catch (Exception e) {
