@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2015-20 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2015-23 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import dk.dma.ais.reader.*;
 import java.util.function.Consumer;
 import dk.dma.ais.message.*;
 import dk.dma.ais.sentence.*;
-import uk.me.jstott.jcoord.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes.*;
 
@@ -147,7 +146,7 @@ public class AisChannel extends Channel
             log.debug(null, chId()+"Latitude out of bounds ("+st.getIdent()+") "+lat);
             return;
         }
-        LatLng prevpos = (st.getPosition()==null ? null : st.getPosition().toLatLng());
+        LatLng prevpos = (st.getPosition()==null ? null : st.getPosition());
         if ( st.saveToTrail(ts.getTime(), new LatLng(lat, lon), speed, course, 
                 (msg instanceof AisMessage27 ? "AISLONG" : "AIS"))) 
         {

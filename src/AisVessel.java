@@ -14,7 +14,6 @@
  */
  
 package no.polaric.ais;
-import uk.me.jstott.jcoord.*; 
 import java.util.*;
 import java.io.Serializable;
 import no.polaric.aprsd.*;
@@ -56,7 +55,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      private Source    _source;
      
      
-     public AisVessel(Reference p, long id)
+     public AisVessel(LatLng p, long id)
        { super(p); _ident = id; }
        
      public boolean hasName()
