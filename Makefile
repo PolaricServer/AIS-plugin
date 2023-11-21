@@ -15,7 +15,7 @@
      SYSLIB= /usr/share/java
       ALIB = aprsd-lib
  CLASSPATH = $(ALIB)/jcoord-polaric.jar:lib/ais-lib-communication.jar:lib/ais-lib-messages.jar:lib/ais-lib-cli.jar:polaric-aprsd.jar
-INSTALLDIR = /etc/polaric-aprsd/plugins
+INSTALLDIR = /usr/lib/polaric/plugins
      JAVAC = javac -source 17 -target 17
        JAR = jar
        
@@ -23,7 +23,7 @@ INSTALLDIR = /etc/polaric-aprsd/plugins
 # Review (and if necessary) change these if you are going to 
 # install by using this makefile
 
-   INSTALL_JAR = $(DESTDIR)/etc/polaric-aprsd/plugins
+   INSTALL_JAR = $(DESTDIR)/usr/lib/polaric/plugins
    INSTALL_WWW = $(DESTDIR)/etc/polaric-webapp/www/auto
    INSTALL_BIN = $(DESTDIR)/usr/bin
 INSTALL_CONFIG = $(DESTDIR)/etc/polaric-aprsd
@@ -51,9 +51,6 @@ install: polaric-ais.jar
 	install -m 644 lib/*.jar $(INSTALL_JAR)
 	install -m 644 ais.ini $(INSTALL_CONFIG)/config.d
 	
-$(INSTALLDIR)/polaric-ais.jar: polaric-ais.jar
-	cp polaric-ais.jar $(INSTALLDIR)/polaric-ais.jar
-
 	
 aprs: $(LIBDIR)
 	@make TDIR=$(LIBDIR) CLASSPATH=$(LIBDIR):$(CLASSPATH) compile     
