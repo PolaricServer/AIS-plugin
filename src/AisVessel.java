@@ -15,6 +15,8 @@
  
 package no.polaric.ais;
 import java.util.*;
+import no.arctic.core.*;
+import no.polaric.aprsd.point.*;
 import java.io.Serializable;
 import no.polaric.aprsd.*;
  

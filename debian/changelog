@@ -1,8 +1,14 @@
-polaric-ais-plugin (2.5+) UNRELEASED; urgency=medium
+polaric-ais-plugin (4.0~pre1) UNRELEASED; urgency=medium
 
-  * Support Json data from points
+  * Move to 4.0
 
- -- Oyvind Hanssen <ohanssen@acm.org>  Fri, 29 Oct 2021 11:03:58 +0200
+ -- Oyvind Hanssen <ohanssen@acm.org>  Fri, 26 Sep 2025 20:58:59 +0200
+
+polaric-ais-plugin (3.0.1) stable; urgency=medium
+
+  * Match the major release  
+
+ -- Oyvind Hanssen <ohanssen@acm.org>  Tue, 05 Dec 2023 21:51:00 +0100
 
 polaric-ais-plugin (2.5) stable; urgency=medium
 

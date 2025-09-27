@@ -2,9 +2,9 @@ Source: polaric-ais-plugin
 Section: hamradio
 Priority: optional
 Maintainer: Øyvind Hanssen <ohanssen@acm.org>
-Build-Depends: debhelper (>=10), openjdk-17-jdk-headless|openjdk-18-jdk-headless|openjdk-19-jdk-headless|openjdk-20-jdk-headless
+Build-Depends: debhelper (>=10), openjdk-17-jdk-headless|openjdk-21-jdk-headless|openjdk-25-jdk-headless
 Standards-Version: 3.9.8
-Homepage: http://aprs.no/dokuwiki
+Homepage:
 
 Package: polaric-ais-plugin
 Architecture: all

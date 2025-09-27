@@ -1,32 +1,32 @@
 
 package no.polaric.ais;
+import no.arctic.core.*;
 import no.polaric.aprsd.*;
-import no.polaric.aprsd.http.*;
 import java.util.*;
 
 
 
 public class AisPlugin implements PluginManager.Plugin
 {
-      private ServerAPI _api; 
+      private AprsServerConfig _conf; 
       static Logfile log;
      
      
       /** Start the plugin  */
-      public void activate(ServerAPI api)
+      public void activate(AprsServerConfig conf)
       {        
          /* It's ok, there is at most one instance of a plugin */
-         log =  new Logfile(api, "aisplugin", "ais.log");
+         log =  new Logfile(conf, "aisplugin", "ais.log");
         
          try {
-           api.log().info("AisPlugin", "Activate plugin...");
-           _api = api;
-           _api.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
+           conf.log().info("AisPlugin", "Activate plugin...");
+           _conf = conf;
+           _conf.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
            AisChannel.classInit();
-           AuthInfo.addService("ais");
+      //     AuthInfo.addService("ais"); FIXME
         }
         catch (Exception e) {
-           _api.log().error("AisPlugin", ""+e);
+           _conf.log().error("AisPlugin", ""+e);
         } 
       }
       
@@ -40,7 +40,7 @@ public class AisPlugin implements PluginManager.Plugin
        
       /**  Stop the plugin */ 
       public void deActivate() {
-         _api.log().info("AisPlugin", "Deactivate plugin");
+         _conf.log().info("AisPlugin", "Deactivate plugin");
       }
        
        

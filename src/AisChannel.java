@@ -15,8 +15,10 @@
 package no.polaric.ais;
 import java.io.*;
 import java.util.*;
+import no.arctic.core.*;
+import no.arctic.core.httpd.*;
 import no.polaric.aprsd.*;
-import no.polaric.aprsd.http.*;
+import no.polaric.aprsd.point.*;
 import dk.dma.ais.packet.AisPacket;
 import dk.dma.ais.reader.*;
 import java.util.function.Consumer;
@@ -36,7 +38,7 @@ public class AisChannel extends Channel
     private   int       _port;
     
     transient private   AisTcpReader  reader;
-    transient private   ServerAPI _api;
+    transient private   AprsServerConfig _conf;
     transient private   int       _chno;
     private static int _next_chno = 0;
     transient private Logfile log = AisPlugin.log;
@@ -50,10 +52,10 @@ public class AisChannel extends Channel
     }
 
         
-    public AisChannel(ServerAPI api, String id) 
+    public AisChannel(AprsServerConfig conf, String id) 
     {
-        _init(api, "channel", id);
-        _api = api;        
+        _init(conf, "channel", id);
+        _conf= conf;        
         _chno = _next_chno;
         _next_chno++;
         _state = State.OFF;
@@ -85,7 +87,7 @@ public class AisChannel extends Channel
     
     public void setJsConfig(Channel.JsConfig ccnf) {
         var cnf = (JsConfig) ccnf;
-        var props = _api.getConfig();
+        var props = _conf.config();
         props.setProperty("channel."+getIdent()+".host", cnf.host);
         props.setProperty("channel."+getIdent()+".port", ""+cnf.port);
     }
@@ -106,8 +108,8 @@ public class AisChannel extends Channel
     protected void getConfig()
     {      
         String id = getIdent();
-        _host = _api.getProperty("channel."+id+".host", "localhost");
-        _port = _api.getIntProperty("channel."+id+".port", 4030);
+        _host = _conf.getProperty("channel."+id+".host", "localhost");
+        _port = _conf.getIntProperty("channel."+id+".port", 4030);
     }
    
  
@@ -151,7 +153,7 @@ public class AisChannel extends Channel
                 (msg instanceof AisMessage27 ? "AISLONG" : "AIS"))) 
         {
             st.updatePosition(ts.getTime(), new LatLng(lat, lon));    
-            _api.getDB().updateItem(st, prevpos);
+            _conf.getDB().updateItem(st, prevpos);
         }
         st.setSpeed(speed);
         st.setCourse(course);
@@ -204,14 +206,14 @@ public class AisChannel extends Channel
      */
     protected AisVessel getStn(AisMessage msg) {
         long id = msg.getUserId();
-        AisVessel v = (AisVessel) _api.getDB().getItem("MMSI:"+id, null);
+        AisVessel v = (AisVessel) _conf.getDB().getItem("MMSI:"+id, null);
         if (v == null) {
             v = new AisVessel(null, id);
             v.setLabelHidden(true);
             v.setTag("AIS");
             if (getTag() != null && !getTag().equals(""))
                 v.setTag(getTag());
-            _api.getDB().addItem(v);
+            _conf.getDB().addItem(v);
             _vessels++;
         }
         v.setSource(this);        
@@ -223,9 +225,9 @@ public class AisChannel extends Channel
  
     /** Start the service */
     Date prev_t = new Date();
-    public void activate(ServerAPI a) {
+    public void activate(AprsServerConfig a) {
         getConfig();
-        _api.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
+        _conf.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
         reader = AisReaders.createReader(_host, _port);
         reader.setReconnectInterval(10000);
         reader.registerPacketHandler(new Consumer<AisPacket>() {
@@ -281,7 +283,7 @@ public class AisChannel extends Channel
     
     /** Stop the service */
     public void deActivate() {
-        _api.log().info("AisChannel", chId()+"Dectivating AIS channel: "+getIdent());
+        _conf.log().info("AisChannel", chId()+"Dectivating AIS channel: "+getIdent());
         try {
             if (reader!=null) {
                 reader.stopReader();
@@ -295,7 +297,7 @@ public class AisChannel extends Channel
     
     
     
-    @Override public String getShortDescr()
+    public String getShortDescr()
        { return "ais"+_chno; }
  
          

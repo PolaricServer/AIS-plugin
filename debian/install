@@ -1,0 +1,5 @@
+target/polaric-ais-plugin-*.jar usr/share/polaric/plugins
+lib/dma-commons*.jar usr/share/polaric/plugins
+lib/enav*.jar usr/share/polaric/plugins
+lib/ais-lib*.jar usr/share/polaric/plugins
+conf/ais.ini etc/polaric-aprsd/config.d
