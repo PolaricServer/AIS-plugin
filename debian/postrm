@@ -4,7 +4,7 @@ set -e
 
 case "$1" in
     remove)
-       pluginctl /etc/polaric-aprsd/confid.d/ais.ini deactivate
+       polaric-pluginctl /etc/polaric-aprsd/confid.d/ais.ini deactivate
        echo "Please restart aprsd when ready" 
     ;;
 
