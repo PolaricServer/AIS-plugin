@@ -1,6 +1,6 @@
 
 package no.polaric.ais;
-import no.arctic.core.*;
+import no.polaric.core.*;
 import no.polaric.aprsd.*;
 import java.util.*;
 
