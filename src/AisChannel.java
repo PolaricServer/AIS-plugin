@@ -114,6 +114,9 @@ public class AisChannel extends Channel
    
  
  
+    // Reusable Calendar instance to reduce object allocation
+    private final ThreadLocal<Calendar> calendarCache = ThreadLocal.withInitial(Calendar::getInstance);
+    
     /**
      * Update position.
      */
@@ -124,8 +127,10 @@ public class AisChannel extends Channel
         double lon = pos.getLongitudeDouble();
         int speed=-1, course=-1;
          
-        Calendar ts = Calendar.getInstance();
-            ts.setTimeInMillis((new Date()).getTime()) ;
+        // Reuse Calendar instance instead of creating new one
+        Calendar ts = calendarCache.get();
+        long currentTimeMillis = System.currentTimeMillis();
+        ts.setTimeInMillis(currentTimeMillis);
             
         if (msg instanceof IVesselPositionMessage) {
             var mm = (IVesselPositionMessage) msg;
@@ -139,7 +144,9 @@ public class AisChannel extends Channel
             int zsec = mm.getUtcSec();
             if (zsec < 60) {
                 ts.set(Calendar.SECOND, zsec);
-                while (ts.getTimeInMillis() > (new Date()).getTime()+3000)
+                // Cache the time limit calculation
+                long timeLimit = currentTimeMillis + 3000;
+                while (ts.getTimeInMillis() > timeLimit)
                     ts.roll(Calendar.MINUTE, -1); 
             }
         }
@@ -224,7 +231,9 @@ public class AisChannel extends Channel
 
  
     /** Start the service */
-    Date prev_t = new Date();
+    private long prev_log_time = System.currentTimeMillis();
+    private static final long LOG_INTERVAL_MS = 120000; // 2 minutes
+    
     public void activate(AprsServerConfig a) {
         getConfig();
         _conf.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
@@ -239,33 +248,32 @@ public class AisChannel extends Channel
                    AisVessel st = getStn(msg);
                    _messages++;
                 
-                   if (msg.getMsgId() == 1 || msg.getMsgId() == 2 || msg.getMsgId() == 3)
+                   int msgId = msg.getMsgId();
+                   if (msgId == 1 || msgId == 2 || msgId == 3)
                        /* Position */
                        updatePosExtra(st, (AisPositionMessage) msg);
-                   else if (msg.getMsgId() == 5 || msg.getMsgId() == 24)
+                   else if (msgId == 5 || msgId == 24)
                        /* Static */
                        updateStatic(st, (AisStaticCommon) msg);
-                   else if (msg.getMsgId() == 18)
+                   else if (msgId == 18)
                        /* Simple position */
                        updatePos(st, (IVesselPositionMessage) msg);
-                   else if (msg.getMsgId() == 19 ) {
+                   else if (msgId == 19) {
                        /* Extended position */
                        updateStatic(st, (AisStaticCommon) msg);
                        updatePos(st, (IVesselPositionMessage)msg);
                    }
-                   else if (msg.getMsgId() == 27 ) {
+                   else if (msgId == 27) {
                        /* Long range */
                        updatePos(st, (IPositionMessage) msg);
                    }
                    
-                   
-                   
-                   Date t = new Date(); 
-                   if (t.getTime() - prev_t.getTime() >= 120000) {
-                      prev_t = t; 
+                   // Periodic logging - check with minimal overhead
+                   long currentTime = System.currentTimeMillis();
+                   if (currentTime - prev_log_time >= LOG_INTERVAL_MS) {
+                      prev_log_time = currentTime; 
                       log.info(null, chId()+"Received "+_messages+" messsages, "+_vessels+" vessels");
                    }
-                   
                    
                } catch (Throwable e) {
                     log.warn(null, chId()+"Cannot parse ais message: "+e);
