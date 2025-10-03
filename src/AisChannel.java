@@ -188,19 +188,22 @@ public class AisChannel extends Channel
           st.setCallsign(callsign);
        if (type != 0) {
           st.setType(type);
+          // Cache the division to avoid repeated calculations
+          int typeCategory = type / 10;
+          
           if (type == 51)
              st.setTag("AIS.SAR");
-          if (type == 55)
+          else if (type == 55)
              st.setTag("AIS.law");
-          if (type == 58)
+          else if (type == 58)
              st.setTag("AIS.medical");
-          if (type / 10 == 4 || type / 10 == 6)
+          else if (typeCategory == 4 || typeCategory == 6)
              st.setTag("AIS.passenger");
-          if (type / 10 == 5)
+          else if (typeCategory == 5)
              st.setTag("AIS.special");
-          if (type / 10 == 7)
+          else if (typeCategory == 7)
              st.setTag("AIS.cargo");
-          if (type / 10 == 8)
+          else if (typeCategory == 8)
              st.setTag("AIS.tanker");
        }
        st.setLabelHidden(false); 
