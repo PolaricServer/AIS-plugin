@@ -238,56 +238,63 @@ public class AisChannel extends Channel
     private static final long LOG_INTERVAL_MS = 120000; // 2 minutes
     
     public void activate(AprsServerConfig a) {
-        getConfig();
-        _conf.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
-        reader = AisReaders.createReader(_host, _port);
-        reader.setReconnectInterval(10000);
-        reader.registerPacketHandler(new Consumer<AisPacket>() {
-           @Override
-           public void accept(AisPacket packet) {
-               try {
-                   AisMessage msg = packet.getAisMessage();
-                   _state = State.RUNNING;
-                   AisVessel st = getStn(msg);
-                   _messages++;
-                
-                   int msgId = msg.getMsgId();
-                   if (msgId == 1 || msgId == 2 || msgId == 3)
-                       /* Position */
-                       updatePosExtra(st, (AisPositionMessage) msg);
-                   else if (msgId == 5 || msgId == 24)
-                       /* Static */
-                       updateStatic(st, (AisStaticCommon) msg);
-                   else if (msgId == 18)
-                       /* Simple position */
-                       updatePos(st, (IVesselPositionMessage) msg);
-                   else if (msgId == 19) {
-                       /* Extended position */
-                       updateStatic(st, (AisStaticCommon) msg);
-                       updatePos(st, (IVesselPositionMessage)msg);
+        try {
+            getConfig();
+            _conf.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
+            reader = AisReaders.createReader(_host, _port);
+            reader.setReconnectInterval(10000);
+            reader.registerPacketHandler(new Consumer<AisPacket>() {
+               @Override
+               public void accept(AisPacket packet) {
+                   try {
+                       AisMessage msg = packet.getAisMessage();
+                       _state = State.RUNNING;
+                       AisVessel st = getStn(msg);
+                       _messages++;
+                    
+                       int msgId = msg.getMsgId();
+                       if (msgId == 1 || msgId == 2 || msgId == 3)
+                           /* Position */
+                           updatePosExtra(st, (AisPositionMessage) msg);
+                       else if (msgId == 5 || msgId == 24)
+                           /* Static */
+                           updateStatic(st, (AisStaticCommon) msg);
+                       else if (msgId == 18)
+                           /* Simple position */
+                           updatePos(st, (IVesselPositionMessage) msg);
+                       else if (msgId == 19) {
+                           /* Extended position */
+                           updateStatic(st, (AisStaticCommon) msg);
+                           updatePos(st, (IVesselPositionMessage)msg);
+                       }
+                       else if (msgId == 27) {
+                           /* Long range */
+                           updatePos(st, (IPositionMessage) msg);
+                       }
+                       
+                       // Periodic logging - check with minimal overhead
+                       long currentTime = System.currentTimeMillis();
+                       if (currentTime - prev_log_time >= LOG_INTERVAL_MS) {
+                          prev_log_time = currentTime; 
+                          log.info(null, chId()+"Received "+_messages+" messsages, "+_vessels+" vessels");
+                       }
+                       
+                   } catch (Throwable e) {
+                        log.warn(null, chId()+"Cannot parse ais message: "+e);
+                        e.printStackTrace(System.out);
+                        return;
                    }
-                   else if (msgId == 27) {
-                       /* Long range */
-                       updatePos(st, (IPositionMessage) msg);
-                   }
-                   
-                   // Periodic logging - check with minimal overhead
-                   long currentTime = System.currentTimeMillis();
-                   if (currentTime - prev_log_time >= LOG_INTERVAL_MS) {
-                      prev_log_time = currentTime; 
-                      log.info(null, chId()+"Received "+_messages+" messsages, "+_vessels+" vessels");
-                   }
-                   
-               } catch (Throwable e) {
-                    log.warn(null, chId()+"Cannot parse ais message: "+e);
-                    e.printStackTrace(System.out);
-                    return;
                }
-           }
-        });
-        
-        reader.start();
-        _state = State.STARTING; 
+            });
+            
+            reader.start();
+            _state = State.STARTING;
+        } catch (Exception e) {
+            _state = State.OFF;
+            _conf.log().error("AisChannel", chId()+"Failed to activate AIS channel: "+getIdent()+" - "+e);
+            e.printStackTrace(System.out);
+            throw new RuntimeException("Failed to activate AIS channel: "+getIdent(), e);
+        }
     }
     
 
