@@ -293,6 +293,15 @@ public class AisChannel extends Channel
             _state = State.OFF;
             _conf.log().error("AisChannel", chId()+"Failed to activate AIS channel: "+getIdent()+" - "+e);
             e.printStackTrace(System.out);
+            // Clean up reader if it was created but activation failed
+            if (reader != null) {
+                try {
+                    reader.stopReader();
+                    reader = null;
+                } catch (Exception cleanupEx) {
+                    _conf.log().warn("AisChannel", chId()+"Error cleaning up reader during failed activation: "+cleanupEx);
+                }
+            }
             throw new RuntimeException("Failed to activate AIS channel: "+getIdent(), e);
         }
     }
@@ -310,7 +319,11 @@ public class AisChannel extends Channel
             }
            _state = State.OFF;
         } 
-        catch (InterruptedException e) {}
+        catch (InterruptedException e) {
+            _conf.log().warn("AisChannel", chId()+"Interrupted while stopping AIS channel: "+getIdent());
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            _state = State.OFF;
+        }
     }
     
     
