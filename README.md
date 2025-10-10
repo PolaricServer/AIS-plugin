@@ -16,16 +16,14 @@ http://aprs.no/polaricserver
 ## System requirements
 
 Linux/Java platform (tested with Debian/Ubuntu) with
-* Java Runtime environment version 11 or later. 
-* scala-library version 2.11 or later. You will also need scala-xml
-  and scala-parser-combinators packages. 
+* Java Runtime environment version 11 or later.  
 * polaric-aprsd, polaric-webapp and polaric-webconfig-plugin installed.
 
 ## Installation
 
-We provide a deb package (Debian Buster or later) For information on getting 
+We provide a deb package. For information on getting 
 started on a Debian platform (or derivative) please see: 
-http://aprs.no/dokuwiki?id=install.dev
+http://aprs.no/polaricserver
 
 If doing manual installation, you may need to add the following to the 
 server.ini file and restart: 
@@ -35,16 +33,10 @@ plugins = no.polaric.ais.AisPlugin
 
 ## Building from source 
 
-Build from the source is done by a plain old makefile. Yes I know :)
-Maybe I move to something else a little later. Setup for generating Debian
-packages is included. You may use the 'debuild' command.
+Build from the source is done by maven. Setup for generating Debian
+packages is included. You may use the 'debuild' command to build a deb package.
 
-You will need JDK (Oracle or OpenJDK) version 11 or later, the Scala
-programming language version 2.11 or later (scala and scala-library). 
+You will need JDK (Oracle or OpenJDK) version 17 or later.
 
-Note. To compile this package you need to symlink or copy the following
-files into the directory where makefile is located. You find them in the polaric-aprsd package.
-* AIS-lib from Danish Maritime Authority (https://github.com/dma-ais/AisLib)
-* polaric-aprsd.jar
-* jcoord.jar
-* simple.jar
+The plugin depends on the AIS-lib from Danish Maritime Authority (https://github.com/dma-ais/AisLib)
+
