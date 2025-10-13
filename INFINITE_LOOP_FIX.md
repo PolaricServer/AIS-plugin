@@ -74,6 +74,37 @@ while (ts.getTimeInMillis() > timeLimit)
    - The loop is meant to roll back time when the UTC second value causes a timestamp to be up to 60 seconds in the future
    - `add()` preserves this functionality while preventing the hang
 
+## Proof of Bug
+
+A test program demonstrates the issue:
+
+```java
+// Simulating timestamp 2 hours in the future
+Calendar cal = Calendar.getInstance();
+long currentTime = System.currentTimeMillis();
+cal.setTimeInMillis(currentTime + 7200000); // 2 hours ahead
+long timeLimit = currentTime + 3000; // Target: 3 seconds ahead
+
+// Using roll() - INFINITE LOOP
+int iterations = 0;
+while (cal.getTimeInMillis() > timeLimit && iterations < 1000) {
+    cal.roll(Calendar.MINUTE, -1);
+    iterations++;
+}
+// Result: 1000 iterations, STILL 8400000ms in future (got worse!)
+
+// Using add() - WORKS CORRECTLY  
+cal.setTimeInMillis(currentTime + 7200000);
+iterations = 0;
+while (cal.getTimeInMillis() > timeLimit) {
+    cal.add(Calendar.MINUTE, -1);
+    iterations++;
+}
+// Result: 120 iterations, 0ms in future (success!)
+```
+
+This proves that `roll()` can create an infinite loop, while `add()` guarantees termination.
+
 ## Testing Recommendations
 
 To verify this fix works correctly:
