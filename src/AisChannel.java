@@ -146,8 +146,10 @@ public class AisChannel extends Channel
                 ts.set(Calendar.SECOND, zsec);
                 // Cache the time limit calculation
                 long timeLimit = currentTimeMillis + 3000;
+                // Use add() instead of roll() to prevent infinite loop
+                // add() properly handles field overflow unlike roll()
                 while (ts.getTimeInMillis() > timeLimit)
-                    ts.roll(Calendar.MINUTE, -1); 
+                    ts.add(Calendar.MINUTE, -1); 
             }
         }
         
