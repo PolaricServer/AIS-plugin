@@ -21,7 +21,8 @@ public class AisPlugin implements PluginManager.Plugin
          try {
            conf.log().info("AisPlugin", "Activate plugin...");
            _conf = conf;
-           _conf.getChanManager().addClass("AIS-TCP", "no.polaric.ais.AisChannel");
+           _conf.getChanManager().addClass("AIS-TCP", "no.polaric.ais.TcpAisChannel");
+           _conf.getChanManager().addClass("AIS-SERIAL", "no.polaric.ais.SerialAisChannel");
            AisChannel.classInit();
       //     AuthInfo.addService("ais"); FIXME
         }

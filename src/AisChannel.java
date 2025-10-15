@@ -29,26 +29,28 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.*;
 
 
 /**
- * AIS Channel. Use AisTcpReader to get messages over a TCP connection.
+ * AIS Channel base class. Use TcpAisChannel for TCP connections or SerialAisChannel for serial port connections.
  */
  
-public class AisChannel extends Channel
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @Type(value = TcpAisChannel.JsConfig.class, name = "AIS-TCP"),
+    @Type(value = SerialAisChannel.JsConfig.class, name = "AIS-SERIAL")
+})
+public abstract class AisChannel extends Channel
 {
-    private   String    _host; 
-    private   int       _port;
-    
-    transient private   AisTcpReader  reader;
-    transient private   AprsServerConfig _conf;
-    transient private   int       _chno;
-    private static int _next_chno = 0;
-    transient private Logfile log = AisPlugin.log;
-    transient private  long _vessels   = 0;
-    transient private  long _messages  = 0; 
+    transient protected   AprsServerConfig _conf;
+    transient protected   int       _chno;
+    protected static int _next_chno = 0;
+    transient protected Logfile log = AisPlugin.log;
+    transient protected  long _vessels   = 0;
+    transient protected  long _messages  = 0; 
     
         
     /* Register subtypes for deserialization */
     public static void classInit() { 
-        ServerBase.addSubtype(AisChannel.JsConfig.class, "AIS-TCP");
+        ServerBase.addSubtype(TcpAisChannel.JsConfig.class, "AIS-TCP");
+        ServerBase.addSubtype(SerialAisChannel.JsConfig.class, "AIS-SERIAL");
     }
 
         
@@ -66,31 +68,15 @@ public class AisChannel extends Channel
      * Information about config to be exchanged in REST API
      */
     
-    @JsonTypeName("AIS-TCP")
     public static class JsConfig extends Channel.JsConfig {
         public long messages, vessels;
-        public int port; 
-        public String host;
-    }
-       
-       
-    public JsConfig getJsConfig() {
-        var cnf = new JsConfig();
-        cnf.messages = _messages;
-        cnf.vessels = _vessels; 
-        cnf.type  = "AIS-TCP";
-        cnf.host  = _api.getProperty("channel."+getIdent()+".host", "localhost");
-        cnf.port  = _api.getIntProperty("channel."+getIdent()+".port", 21);
-        return cnf;
     }
     
+    @Override
+    public abstract JsConfig getJsConfig();
     
-    public void setJsConfig(Channel.JsConfig ccnf) {
-        var cnf = (JsConfig) ccnf;
-        var props = _conf.config();
-        props.setProperty("channel."+getIdent()+".host", cnf.host);
-        props.setProperty("channel."+getIdent()+".port", ""+cnf.port);
-    }
+    @Override
+    public abstract void setJsConfig(Channel.JsConfig ccnf);
     
        
        
@@ -105,12 +91,7 @@ public class AisChannel extends Channel
     /**
      * Load/reload configuration parameters. Called each time channel is activated. 
      */
-    protected void getConfig()
-    {      
-        String id = getIdent();
-        _host = _conf.getProperty("channel."+id+".host", "localhost");
-        _port = _conf.getIntProperty("channel."+id+".port", 4030);
-    }
+    protected abstract void getConfig();
    
  
  
@@ -212,7 +193,7 @@ public class AisChannel extends Channel
        st.autoTag(); 
     }
  
- 
+
     /** 
      * Get Point object for AIS message.
      */
@@ -231,102 +212,64 @@ public class AisChannel extends Channel
         v.setSource(this);        
         return v;
     } 
- 
- 
+
+
+
+    /**
+     * Handle an AIS packet. This is the common packet processing logic used by all channel types.
+     */
+    protected void handlePacket(AisPacket packet) {
+        try {
+            AisMessage msg = packet.getAisMessage();
+            _state = State.RUNNING;
+            AisVessel st = getStn(msg);
+            _messages++;
+         
+            int msgId = msg.getMsgId();
+            if (msgId == 1 || msgId == 2 || msgId == 3)
+                /* Position */
+                updatePosExtra(st, (AisPositionMessage) msg);
+            else if (msgId == 5 || msgId == 24)
+                /* Static */
+                updateStatic(st, (AisStaticCommon) msg);
+            else if (msgId == 18)
+                /* Simple position */
+                updatePos(st, (IVesselPositionMessage) msg);
+            else if (msgId == 19) {
+                /* Extended position */
+                updateStatic(st, (AisStaticCommon) msg);
+                updatePos(st, (IVesselPositionMessage)msg);
+            }
+            else if (msgId == 27) {
+                /* Long range */
+                updatePos(st, (IPositionMessage) msg);
+            }
+            
+            // Periodic logging - check with minimal overhead
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - prev_log_time >= LOG_INTERVAL_MS) {
+               prev_log_time = currentTime; 
+               log.info(null, chId()+"Received "+_messages+" messsages, "+_vessels+" vessels");
+            }
+            
+        } catch (Throwable e) {
+             log.warn(null, chId()+"Cannot parse ais message: "+e);
+             e.printStackTrace(System.out);
+             return;
+        }
+    }
 
  
     /** Start the service */
-    private long prev_log_time = System.currentTimeMillis();
-    private static final long LOG_INTERVAL_MS = 120000; // 2 minutes
+    protected long prev_log_time = System.currentTimeMillis();
+    protected static final long LOG_INTERVAL_MS = 120000; // 2 minutes
     
-    public void activate(AprsServerConfig a) {
-        try {
-            getConfig();
-            _conf.log().info("AisChannel", chId()+"Activating AIS channel: "+getIdent()+" ("+_host+":"+_port+")");
-            reader = AisReaders.createReader(_host, _port);
-            reader.setReconnectInterval(10000);
-            reader.registerPacketHandler(new Consumer<AisPacket>() {
-               @Override
-               public void accept(AisPacket packet) {
-                   try {
-                       AisMessage msg = packet.getAisMessage();
-                       _state = State.RUNNING;
-                       AisVessel st = getStn(msg);
-                       _messages++;
-                    
-                       int msgId = msg.getMsgId();
-                       if (msgId == 1 || msgId == 2 || msgId == 3)
-                           /* Position */
-                           updatePosExtra(st, (AisPositionMessage) msg);
-                       else if (msgId == 5 || msgId == 24)
-                           /* Static */
-                           updateStatic(st, (AisStaticCommon) msg);
-                       else if (msgId == 18)
-                           /* Simple position */
-                           updatePos(st, (IVesselPositionMessage) msg);
-                       else if (msgId == 19) {
-                           /* Extended position */
-                           updateStatic(st, (AisStaticCommon) msg);
-                           updatePos(st, (IVesselPositionMessage)msg);
-                       }
-                       else if (msgId == 27) {
-                           /* Long range */
-                           updatePos(st, (IPositionMessage) msg);
-                       }
-                       
-                       // Periodic logging - check with minimal overhead
-                       long currentTime = System.currentTimeMillis();
-                       if (currentTime - prev_log_time >= LOG_INTERVAL_MS) {
-                          prev_log_time = currentTime; 
-                          log.info(null, chId()+"Received "+_messages+" messsages, "+_vessels+" vessels");
-                       }
-                       
-                   } catch (Throwable e) {
-                        log.warn(null, chId()+"Cannot parse ais message: "+e);
-                        e.printStackTrace(System.out);
-                        return;
-                   }
-               }
-            });
-            
-            reader.start();
-            _state = State.STARTING;
-        } catch (Exception e) {
-            _state = State.OFF;
-            _conf.log().error("AisChannel", chId()+"Failed to activate AIS channel: "+getIdent()+" - "+e);
-            e.printStackTrace(System.out);
-            // Clean up reader if it was created but activation failed
-            if (reader != null) {
-                try {
-                    reader.stopReader();
-                    reader = null;
-                } catch (Exception cleanupEx) {
-                    _conf.log().warn("AisChannel", chId()+"Error cleaning up reader during failed activation: "+cleanupEx);
-                }
-            }
-            throw new RuntimeException("Failed to activate AIS channel: "+getIdent(), e);
-        }
-    }
+    public abstract void activate(AprsServerConfig a);
     
-
+    
     
     /** Stop the service */
-    public void deActivate() {
-        _conf.log().info("AisChannel", chId()+"Dectivating AIS channel: "+getIdent());
-        try {
-            if (reader!=null) {
-                reader.stopReader();
-                reader.join();
-                reader = null;
-            }
-           _state = State.OFF;
-        } 
-        catch (InterruptedException e) {
-            _conf.log().warn("AisChannel", chId()+"Interrupted while stopping AIS channel: "+getIdent());
-            Thread.currentThread().interrupt(); // Restore interrupted status
-            _state = State.OFF;
-        }
-    }
+    public abstract void deActivate();
     
     
     
