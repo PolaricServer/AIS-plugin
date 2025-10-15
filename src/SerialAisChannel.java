@@ -62,7 +62,7 @@ public class SerialAisChannel extends AisChannel
         cnf.messages = _messages;
         cnf.vessels = _vessels; 
         cnf.type  = "AIS-SERIAL";
-        cnf.port  = _api.getProperty("channel."+getIdent()+".port", "/dev/ttyUSB0");
+        cnf.port  = _conf.getProperty("channel."+getIdent()+".port", "/dev/ttyUSB0");
         return cnf;
     }
     

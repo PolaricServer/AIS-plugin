@@ -64,8 +64,8 @@ public class TcpAisChannel extends AisChannel
         cnf.messages = _messages;
         cnf.vessels = _vessels; 
         cnf.type  = "AIS-TCP";
-        cnf.host  = _api.getProperty("channel."+getIdent()+".host", "localhost");
-        cnf.port  = _api.getIntProperty("channel."+getIdent()+".port", 21);
+        cnf.host  = _conf.getProperty("channel."+getIdent()+".host", "localhost");
+        cnf.port  = _conf.getIntProperty("channel."+getIdent()+".port", 21);
         return cnf;
     }
     
