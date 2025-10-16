@@ -1,6 +1,7 @@
 
 package no.polaric.ais;
 import no.polaric.core.*;
+import no.polaric.core.auth.*;
 import no.polaric.aprsd.*;
 import java.util.*;
 
@@ -24,7 +25,7 @@ public class AisPlugin implements PluginManager.Plugin
            _conf.getChanManager().addClass("AIS-TCP", "no.polaric.ais.TcpAisChannel");
            _conf.getChanManager().addClass("AIS-SERIAL", "no.polaric.ais.SerialAisChannel");
            AisChannel.classInit();
-      //     AuthInfo.addService("ais"); FIXME
+           AuthInfo.addService("ais");
         }
         catch (Exception e) {
            _conf.log().error("AisPlugin", ""+e);

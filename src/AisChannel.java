@@ -72,13 +72,6 @@ public abstract class AisChannel extends Channel
         public long messages, vessels;
     }
     
-    @Override
-    public abstract JsConfig getJsConfig();
-    
-    @Override
-    public abstract void setJsConfig(Channel.JsConfig ccnf);
-    
-       
        
        
     public long heardVessels()
