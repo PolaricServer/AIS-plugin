@@ -6,7 +6,7 @@ time. It is originally targeted for use by radio amateurs in voluntary search
 and rescue service in Norway. It consists of a web application and a server 
 program (APRS daemon). 
  
-This is a plugin that can read AIS data from a TCP stream and and present 
+This is a plugin that can read AIS data from a TCP stream or a serial port and and present 
 AIS vessels as moving points on the map. It is used on aprs.no with data from 
 the Norwegian Maritime Authority. 
  
@@ -16,8 +16,8 @@ http://aprs.no/polaricserver
 ## System requirements
 
 Linux/Java platform (tested with Debian/Ubuntu) with
-* Java Runtime environment version 11 or later.  
-* polaric-aprsd, polaric-webapp and polaric-webconfig-plugin installed.
+* Java Runtime environment version 17 or later.  
+* polaric-aprsd and polaric-webapp installed.
 
 ## Installation
 
