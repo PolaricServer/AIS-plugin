@@ -54,7 +54,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      private String    _callsign; 
      private int       _type = 0;
      private int       _navstatus = -1; 
-     private Source    _source;
+     private String    _source;
      
      
      public AisVessel(LatLng p, long id)
@@ -114,13 +114,19 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
      public void setNavStatus (int s)
         { _navstatus = s; }
         
-     @Override public Source getSource() 
-        { return _source; } 
-    
-     public void setSource(Source src)
-       { _source = src; }      
+
+    @Override public Source getSource()
+       { return _api.getChanManager().get(_source); }
        
-     @Override public String getIcon(boolean override) 
+       
+    @Override public String getSourceId()
+       { return _source; }
+       
+    public void setSource(Source src)
+       { _source = src.getIdent(); }
+       
+       
+    @Override public String getIcon(boolean override) 
         { if (override && _icon != null)
             return _icon; 
           else return "boat.png"; }
