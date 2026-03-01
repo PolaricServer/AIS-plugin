@@ -8,7 +8,7 @@ Homepage:
 
 Package: polaric-ais-plugin
 Architecture: all
-Depends: polaric-aprsd (>=4.0), ${misc:Depends}
+Depends: polaric-aprsd (>=4.1), ${misc:Depends}
 Recommends: 
 Description: Polaric Server: AIS data plugin. 
  The "Polaric Server" is mainly a web based service to present tracking 
