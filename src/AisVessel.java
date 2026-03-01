@@ -116,7 +116,7 @@ public class AisVessel extends TrackerPoint implements Serializable, Cloneable
         
 
     @Override public Source getSource()
-       { return _api.getChanManager().get(_source); }
+       { return _conf.getChanManager().get(_source); }
        
        
     @Override public String getSourceId()

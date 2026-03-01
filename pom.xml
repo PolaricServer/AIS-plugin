@@ -6,7 +6,7 @@
 
   <groupId>no.polaric</groupId>
   <artifactId>polaric-ais-plugin</artifactId>
-  <version>4.0-pre1</version>
+  <version>4.1</version>
 
   <name>Polaric AIS Plugin</name>
   
@@ -35,13 +35,8 @@
   <dependencies>
         <dependency>
             <groupId>no.polaric</groupId>
-            <artifactId>polaric-core</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>no.polaric</groupId>
             <artifactId>polaric-aprsd</artifactId>
-            <version>4.0~pre2</version>
+            <version>4.1</version>
         </dependency>
         <dependency>
             <groupId>dk.dma.ais.lib</groupId>
