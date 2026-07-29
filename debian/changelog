@@ -1,3 +1,9 @@
+polaric-ais-plugin (4.2) stable; urgency=medium
+
+  * Base on aprsd 4.2
+
+ -- Oyvind Hanssen <ohanssen@acm.org>  Mon, 27 Jul 2026 14:25:16 +0200
+
 polaric-ais-plugin (4.1) stable; urgency=medium
 
   * Base on aprsd 4.1

@@ -1,14 +1,11 @@
-
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: polaric-aprsd
+Source: https://github.com/PolaricServer
+ 
 Files: *
-Copyright: 2013 Øyvind hanssen <ohanssen@acm.org>
-License: GPL-2.0
-(see /usr/share/common-licenses/GPL-2)
-
-
-Files: debian/*
-Copyright: 2013 Øyvind hanssen <ohanssen@acm.org>
-License: GPL-2.0
-(see /usr/share/common-licenses/GPL-2)
+Copyright: 2026, Øyvind hanssen <ohanssen@acm.org>
+License: AGPL-3+
+(see https://www.gnu.org/licenses/agpl-3.0.html#license-text)
 
 
 Files: ais-lib-messages.jar
