@@ -16,7 +16,7 @@ http://aprs.no/polaricserver
 ## System requirements
 
 Linux/Java platform (tested with Debian/Ubuntu) with
-* Java Runtime environment version 17 or later.  
+* Java Runtime environment version 21 or later.  
 * polaric-aprsd and polaric-webapp installed.
 
 ## Installation
