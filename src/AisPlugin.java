@@ -17,7 +17,8 @@ public class AisPlugin implements PluginManager.Plugin
       public void activate(AprsServerConfig conf)
       {        
          /* It's ok, there is at most one instance of a plugin */
-         log =  new Logfile(conf, "aisplugin", "ais.log");
+         String logdir = conf.getProperty("logdir", "/var/log/polaric");   
+         log =  new Logfile(conf, "aisplugin", logdir+"/ais.log");
         
          try {
            conf.log().info("AisPlugin", "Activate plugin...");
